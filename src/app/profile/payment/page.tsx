@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Plus, Trash2 } from 'lucide-react';
 import { userPaymentMethods as defaultPaymentMethods, PaymentMethod } from '@/lib/user-data';
 import { useToast } from '@/hooks/use-toast';
+import { PaymentDialog } from '@/components/profile/payment-dialog';
 
 
 const getCardIcon = (type: 'visa' | 'mastercard') => {
@@ -38,6 +39,7 @@ const getCardIcon = (type: 'visa' | 'mastercard') => {
 export default function PaymentPage() {
     const { toast } = useToast();
     const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
 
     useEffect(() => {
         const storedMethods = localStorage.getItem('userPaymentMethods');
@@ -53,17 +55,11 @@ export default function PaymentPage() {
         setPaymentMethods(updatedMethods);
     };
 
-    const handleAddCard = () => {
-        const newCard: PaymentMethod = {
-            id: `pm-${Date.now()}`,
-            type: Math.random() > 0.5 ? 'visa' : 'mastercard',
-            last4: String(Math.floor(1000 + Math.random() * 9000)),
-            expiry: `12/${new Date().getFullYear() + 3 - 2000}`,
-            cardHolder: 'Rohan Sharma'
-        };
-        const updatedMethods = [...paymentMethods, newCard];
+    const handleSaveCard = (card: PaymentMethod) => {
+        const updatedMethods = [...paymentMethods, card];
         updateLocalStorage(updatedMethods);
         toast({ title: 'Payment Method Added', description: 'A new card has been added.' });
+        setIsDialogOpen(false);
     };
 
     const handleDeleteCard = (id: string) => {
@@ -73,49 +69,57 @@ export default function PaymentPage() {
     };
 
   return (
-    <Card>
-      <CardHeader className="flex flex-row justify-between items-start">
-        <div>
-            <CardTitle>Payment Methods</CardTitle>
-            <CardDescription>
-                Manage your saved credit and debit cards.
-            </CardDescription>
-        </div>
-        <Button onClick={handleAddCard}>
-            <Plus className="mr-2 h-4 w-4"/>
-            Add New Card
-        </Button>
-      </CardHeader>
-      <CardContent>
-         {paymentMethods.length === 0 ? (
-          <div className="text-center text-muted-foreground py-8">
-            <p>You have no saved payment methods.</p>
-          </div>
-        ) : (
-            <div className="space-y-4">
-            {paymentMethods.map((method) => (
-                <div key={method.id} className="p-4 border rounded-lg flex justify-between items-center">
-                <div className="flex items-center gap-4">
-                    {getCardIcon(method.type)}
-                    <div>
-                    <p className="font-semibold">{method.cardHolder}</p>
-                    <p className="text-muted-foreground text-sm">
-                        {method.type === 'visa' ? 'Visa' : 'Mastercard'} ending in {method.last4}
-                    </p>
-                    <p className="text-muted-foreground text-sm">
-                        Expires {method.expiry}
-                    </p>
-                    </div>
-                </div>
-                <Button variant="destructive" size="icon" onClick={() => handleDeleteCard(method.id)}>
-                    <Trash2 className="h-4 w-4" />
-                    <span className="sr-only">Delete Card</span>
-                </Button>
-                </div>
-            ))}
+    <>
+        <Card>
+        <CardHeader className="flex flex-row justify-between items-start">
+            <div>
+                <CardTitle>Payment Methods</CardTitle>
+                <CardDescription>
+                    Manage your saved credit and debit cards.
+                </CardDescription>
             </div>
-        )}
-      </CardContent>
-    </Card>
+            <Button onClick={() => setIsDialogOpen(true)}>
+                <Plus className="mr-2 h-4 w-4"/>
+                Add New Card
+            </Button>
+        </CardHeader>
+        <CardContent>
+            {paymentMethods.length === 0 ? (
+            <div className="text-center text-muted-foreground py-8">
+                <p>You have no saved payment methods.</p>
+            </div>
+            ) : (
+                <div className="space-y-4">
+                {paymentMethods.map((method) => (
+                    <div key={method.id} className="p-4 border rounded-lg flex justify-between items-center">
+                    <div className="flex items-center gap-4">
+                        {getCardIcon(method.type)}
+                        <div>
+                        <p className="font-semibold">{method.cardHolder}</p>
+                        <p className="text-muted-foreground text-sm">
+                            {method.type === 'visa' ? 'Visa' : 'Mastercard'} ending in {method.last4}
+                        </p>
+                        <p className="text-muted-foreground text-sm">
+                            Expires {method.expiry}
+                        </p>
+                        </div>
+                    </div>
+                    <Button variant="destructive" size="icon" onClick={() => handleDeleteCard(method.id)}>
+                        <Trash2 className="h-4 w-4" />
+                        <span className="sr-only">Delete Card</span>
+                    </Button>
+                    </div>
+                ))}
+                </div>
+            )}
+        </CardContent>
+        </Card>
+        <PaymentDialog
+            isOpen={isDialogOpen}
+            onOpenChange={setIsDialogOpen}
+            onSave={handleSaveCard}
+        />
+    </>
   );
 }
+

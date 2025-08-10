@@ -29,6 +29,9 @@
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
+
+    --lg-bg-color: rgba(255, 255, 255, 0.25);
+    --lg-highlight: rgba(255, 255, 255, 0.75);
   }
 
   .dark {
@@ -65,5 +68,39 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  .glass-container {
+    @apply relative bg-transparent overflow-hidden shadow-lg transition-all duration-300;
+  }
+
+  .glass-filter,
+  .glass-overlay,
+  .glass-specular {
+    @apply absolute inset-0;
+    border-radius: inherit;
+  }
+
+  .glass-filter {
+    z-index: 0;
+    backdrop-filter: blur(4px);
+    filter: saturate(120%) brightness(1.15);
+  }
+
+  .glass-overlay {
+    z-index: 1;
+    background: var(--lg-bg-color);
+  }
+
+  .glass-specular {
+    z-index: 2;
+    box-shadow: inset 1px 1px 0 var(--lg-highlight),
+      inset 0 0 5px var(--lg-highlight);
+  }
+
+  .glass-content {
+    @apply relative z-[3];
   }
 }

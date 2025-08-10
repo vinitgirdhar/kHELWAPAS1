@@ -21,7 +21,7 @@ const features = [
 
 export default function FeatureCards() {
   return (
-    <section className="py-20 bg-background">
+    <section className="py-20 bg-muted/20">
       <div className="container">
         <div className="text-center mb-12">
           <h2 className="font-headline text-3xl md:text-4xl font-bold tracking-tight">Why Choose KHELWAPAS?</h2>
@@ -31,15 +31,22 @@ export default function FeatureCards() {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {features.map((feature, index) => (
-            <Card key={index} className="text-center p-6 shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-transform duration-300">
-              <CardHeader className="items-center">
-                <div className="bg-primary/10 p-4 rounded-full mb-4">
-                  {feature.icon}
-                </div>
-                <CardTitle className="font-headline text-xl">{feature.title}</CardTitle>
-                <CardDescription className="pt-2">{feature.description}</CardDescription>
-              </CardHeader>
-            </Card>
+            <div key={index} className="glass-container rounded-lg hover:shadow-2xl hover:-translate-y-2">
+              <div className="glass-filter"></div>
+              <div className="glass-overlay"></div>
+              <div className="glass-specular"></div>
+              <div className="glass-content">
+                <Card className="text-center p-6 bg-transparent border-0 shadow-none w-full">
+                  <CardHeader className="items-center">
+                    <div className="bg-primary/10 p-4 rounded-full mb-4">
+                      {feature.icon}
+                    </div>
+                    <CardTitle className="font-headline text-xl text-card-foreground">{feature.title}</CardTitle>
+                    <CardDescription className="pt-2 text-card-foreground/80">{feature.description}</CardDescription>
+                  </CardHeader>
+                </Card>
+              </div>
+            </div>
           ))}
         </div>
       </div>

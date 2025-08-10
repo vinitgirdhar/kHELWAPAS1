@@ -5,8 +5,16 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { CheckCircle, FileText, Home } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useState, useEffect } from 'react';
 
 export default function OrderSuccessPage() {
+    const [orderId, setOrderId] = useState('');
+
+    useEffect(() => {
+        // In a real app, you might get this from the URL or state management
+        setOrderId(`ORD-${Date.now().toString().slice(-6)}`);
+    }, []);
+
   return (
     <div className="container py-20 md:py-32 flex items-center justify-center">
       <Card className="w-full max-w-2xl text-center">
@@ -21,13 +29,15 @@ export default function OrderSuccessPage() {
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="p-4 bg-muted/50 rounded-lg">
-            <p className="font-semibold">Order ID: <span className="font-normal text-muted-foreground">#ORD-{Date.now().toString().slice(-6)}</span></p>
+            <p className="font-semibold">Order ID: <span className="font-normal text-muted-foreground">#{orderId}</span></p>
             <p className="font-semibold mt-1">Estimated Delivery: <span className="font-normal text-muted-foreground">3-5 business days</span></p>
           </div>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-             <Button variant="outline" size="lg">
-                <FileText className="mr-2 h-5 w-5"/>
-                Download Invoice
+             <Button asChild variant="outline" size="lg">
+                <Link href={`/invoice/${orderId}`} target="_blank">
+                    <FileText className="mr-2 h-5 w-5"/>
+                    Download Invoice
+                </Link>
             </Button>
             <Button asChild size="lg">
               <Link href="/">

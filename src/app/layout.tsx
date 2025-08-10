@@ -36,6 +36,7 @@ export default function RootLayout({
 }>) {
   const pathname = usePathname();
   const isAdminRoute = pathname.startsWith('/admin');
+  const isInvoiceRoute = pathname.startsWith('/invoice');
   
   return (
     <html
@@ -63,14 +64,15 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap"
           rel="stylesheet"
         />
+        {isInvoiceRoute && <link rel="stylesheet" href="/invoice-print.css" />}
       </head>
       <body
         className={cn('min-h-screen bg-background font-body antialiased')}
       >
         <div className="relative flex min-h-dvh flex-col">
-           {isAdminRoute ? null : <Header />}
-          <main className={cn("flex-1", { "bg-muted/40": isAdminRoute })}>{children}</main>
-          {isAdminRoute ? null : <Footer />}
+           {isAdminRoute || isInvoiceRoute ? null : <Header />}
+          <main className={cn("flex-1", { "bg-muted/40": isAdminRoute, "bg-gray-100": isInvoiceRoute })}>{children}</main>
+          {isAdminRoute || isInvoiceRoute ? null : <Footer />}
         </div>
         <Toaster />
       </body>

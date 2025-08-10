@@ -1,9 +1,11 @@
 'use client';
 
 import PriceEstimator from "@/components/price-estimator";
+import ManualSellForm from "@/components/sell/manual-sell-form";
 import SellingPoints from "@/components/sell/selling-points";
 import { Button } from "@/components/ui/button";
-import { ArrowDown } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
+import { ArrowDown, Mail, MessageSquare, PencilLine } from "lucide-react";
 
 export default function SellPage() {
     const scrollToEstimator = () => {
@@ -55,6 +57,30 @@ export default function SellPage() {
                     </div>
                 </div>
             </div>
+
+            <Separator className="my-12" />
+
+            <section className="container pb-20">
+                <div className="text-center mb-12">
+                    <h2 className="font-headline text-3xl md:text-4xl font-bold tracking-tighter">
+                        Or, Submit a Manual Request
+                    </h2>
+                    <p className="text-lg text-muted-foreground mt-2 max-w-2xl mx-auto">
+                        Prefer to do it the old-fashioned way? Fill out the form below and our team will get back to you.
+                    </p>
+                </div>
+                <div className="max-w-4xl mx-auto">
+                    <div className="glass-container rounded-lg">
+                        <div className="glass-filter"></div>
+                        <div className="glass-overlay"></div>
+                        <div className="glass-specular"></div>
+                        <div className="glass-content p-0">
+                           <ManualSellForm />
+                        </div>
+                    </div>
+                </div>
+            </section>
+
         </>
     );
 }

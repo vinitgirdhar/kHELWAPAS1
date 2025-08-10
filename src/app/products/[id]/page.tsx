@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { ArrowLeft, Minus, Plus, ShoppingCart, Zap, Star, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -21,19 +21,18 @@ import {
 } from "@/components/ui/tooltip"
 import { useCart } from '@/hooks/use-cart';
 
-export default function ProductDetailPage({ params }: { params: { id: string } }) {
+export default function ProductDetailPage() {
   const router = useRouter();
+  const params = useParams();
   const { addItem } = useCart();
   
-  // Find product synchronously, which is safer in Next.js 15+
-  const product = allProducts.find((p) => p.id === params.id) || null;
+  const productId = typeof params.id === 'string' ? params.id : '';
+  const product = allProducts.find((p) => p.id === productId) || null;
 
   const [selectedImage, setSelectedImage] = useState<string | undefined>(product?.image);
   const [quantity, setQuantity] = useState(1);
 
   useEffect(() => {
-    // This effect now only syncs the image when the product changes.
-    // This is useful if the user navigates between product pages.
     if (product) {
       setSelectedImage(product.image);
     }

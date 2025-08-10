@@ -2,7 +2,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import type { Product } from '@/components/product-card';
-import { useToast } from './use-toast';
+import { toast } from './use-toast';
 
 export type CartItem = Product & {
   quantity: number;
@@ -21,7 +21,6 @@ export const useCart = create<CartState>()(
     (set, get) => ({
       items: [],
       addItem: (product) => {
-        const { toast } = useToast.getState();
         const currentItems = get().items;
         const existingItem = currentItems.find((item) => item.id === product.id);
 
@@ -38,9 +37,18 @@ export const useCart = create<CartState>()(
           // If item doesn't exist, add it to the cart
           set({ items: [...currentItems, product] });
         }
+        
+        toast({
+            title: 'Added to cart',
+            description: `${product.name} (x${product.quantity}) has been added.`,
+        });
       },
       removeItem: (id) => {
         set({ items: get().items.filter((item) => item.id !== id) });
+         toast({
+            title: 'Item removed',
+            description: `The item has been removed from your cart.`,
+        });
       },
       updateQuantity: (id, quantity) => {
         if (quantity < 1) {

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -18,17 +18,24 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-import { useToast } from '@/hooks/use-toast';
 import { useCart } from '@/hooks/use-cart';
 
 export default function ProductDetailPage({ params }: { params: { id: string } }) {
   const router = useRouter();
-  const { toast } = useToast();
   const { addItem } = useCart();
   
-  const product = allProducts.find((p) => p.id === params.id);
-  const [selectedImage, setSelectedImage] = useState(product?.images ? product.images[0] : product?.image);
+  const [product, setProduct] = useState<Product | null>(null);
+  const [selectedImage, setSelectedImage] = useState<string | undefined>(undefined);
   const [quantity, setQuantity] = useState(1);
+
+  useEffect(() => {
+    const foundProduct = allProducts.find((p) => p.id === params.id);
+    if (foundProduct) {
+      setProduct(foundProduct);
+      setSelectedImage(foundProduct.image);
+    }
+  }, [params.id]);
+
 
   if (!product) {
     return (
@@ -46,10 +53,6 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
 
   const handleAddToCart = () => {
     addItem({ ...product, quantity });
-    toast({
-      title: "Added to Cart!",
-      description: `${product.name} (x${quantity}) has been added to your cart.`,
-    });
   };
 
   const handleBuyNow = () => {
@@ -61,7 +64,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
     (p) => p.category === product.category && p.id !== product.id
   ).slice(0, 3);
   
-  const allImages = [product.image, ...(product.images || [])];
+  const allImages = [product.image, ...(product.images || [])].filter(Boolean);
 
   const gradeTooltip = {
     A: "Looks like new, with minimal to no signs of use.",

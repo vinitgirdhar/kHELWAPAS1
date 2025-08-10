@@ -7,7 +7,7 @@ import { allProducts } from "@/lib/products";
 import { useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Printer } from "lucide-react";
-import '../invoice-print.css';
+import '../../invoice-print.css';
 
 // Mock function to get order details. In a real app, this would be an API call.
 const getOrderDetails = (orderId: string) => {

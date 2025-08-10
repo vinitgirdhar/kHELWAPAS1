@@ -52,6 +52,25 @@ export const sellRequests: SellRequest[] = [
             'https://images.unsplash.com/photo-1587280501635-33535b3f631c?q=80&w=200&h=200&fit=crop'
         ],
         status: 'Approved',
+    },
+    {
+        id: 'req-3',
+        fullName: 'Amit Patel',
+        email: 'amit.p@example.com',
+        category: 'Football',
+        title: 'Adidas Predator Football Boots',
+        description: 'UK size 9. Used for half a season. Some cosmetic wear on the sides but studs are in perfect condition. No rips or tears. Cleaned and sanitized.',
+        price: 3200,
+        contactMethod: 'Phone',
+        contactDetail: '9123456789',
+        imageUrls: [
+            'https://images.unsplash.com/photo-1551958214-2d5b80a5a088?q=80&w=200&h=200&fit=crop',
+            'https://images.unsplash.com/photo-1575361204480-aadea2503aa4?q=80&w=200&h=200&fit=crop',
+            'https://images.unsplash.com/photo-1551958214-2d5b80a5a088?q=80&w=200&h=200&fit=crop',
+            'https://images.unsplash.com/photo-1575361204480-aadea2503aa4?q=80&w=200&h=200&fit=crop',
+            'https://images.unsplash.com/photo-1551958214-2d5b80a5a088?q=80&w=200&h=200&fit=crop'
+        ],
+        status: 'Rejected',
     }
 ];
 

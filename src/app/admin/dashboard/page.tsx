@@ -4,7 +4,7 @@
 import Image from 'next/image';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { BarChart, Package, ShoppingCart, Users, CheckCircle, Clock, XCircle } from "lucide-react";
+import { BarChart, Package, ShoppingCart, Users, CheckCircle, Clock, XCircle, MoreHorizontal } from "lucide-react";
 import { sellRequests, type SellRequest } from '@/lib/sell-requests';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -13,13 +13,14 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
-const statusConfig = {
-    Pending: { icon: <Clock className="h-4 w-4" />, color: "bg-yellow-500" },
-    Approved: { icon: <CheckCircle className="h-4 w-4" />, color: "bg-green-500" },
-    Rejected: { icon: <XCircle className="h-4 w-4" />, color: "bg-red-500" },
+const statusConfig: Record<SellRequest['status'], { icon: React.ReactNode; color: string; badge: string; }> = {
+    Pending: { icon: <Clock className="h-3 w-3" />, color: "text-yellow-600 bg-yellow-100/60 border-yellow-500/30", badge: "bg-yellow-500" },
+    Approved: { icon: <CheckCircle className="h-3 w-3" />, color: "text-green-600 bg-green-100/60 border-green-500/30", badge: "bg-green-500" },
+    Rejected: { icon: <XCircle className="h-3 w-3" />, color: "text-red-600 bg-red-100/60 border-red-500/30", badge: "bg-red-500" },
 };
 
 
@@ -89,71 +90,66 @@ export default function AdminDashboardPage() {
         <Card>
             <CardHeader>
                 <CardTitle>Recent Sell Requests</CardTitle>
-                <CardDescription>A list of the most recent manual sell requests.</CardDescription>
+                <CardDescription>A list of the most recent manual sell requests from users.</CardDescription>
             </CardHeader>
             <CardContent>
                  <Table>
                     <TableHeader>
                         <TableRow>
-                        <TableHead>Seller</TableHead>
+                        <TableHead className="hidden sm:table-cell">Seller</TableHead>
                         <TableHead>Item</TableHead>
-                        <TableHead>Description</TableHead>
-                        <TableHead>Images</TableHead>
                         <TableHead>Asking Price</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Actions</TableHead>
+                        <TableHead className="hidden md:table-cell">Status</TableHead>
+                        <TableHead>
+                            <span className="sr-only">Actions</span>
+                        </TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
                         {sellRequests.map((request) => (
                         <TableRow key={request.id}>
-                            <TableCell>
+                           <TableCell className="hidden sm:table-cell">
                                 <div className="font-medium">{request.fullName}</div>
                                 <div className="text-sm text-muted-foreground">{request.email}</div>
                             </TableCell>
                             <TableCell>
-                                <div className="font-medium">{request.title}</div>
-                                <div className="text-sm text-muted-foreground">{request.category}</div>
-                            </TableCell>
-                             <TableCell>
-                                <p className="max-w-xs truncate">{request.description}</p>
-                            </TableCell>
-                            <TableCell>
-                                <div className="flex -space-x-4 rtl:space-x-reverse">
-                                {request.imageUrls.slice(0, 3).map((url, index) => (
-                                    <Image
-                                        key={index}
-                                        src={url}
-                                        alt={`Item image ${index + 1}`}
-                                        width={40}
-                                        height={40}
-                                        className="w-10 h-10 border-2 border-white rounded-full dark:border-gray-800 object-cover"
-                                    />
-                                ))}
-                                {request.imageUrls.length > 3 && (
-                                     <a className="flex items-center justify-center w-10 h-10 text-xs font-medium text-white bg-gray-700 border-2 border-white rounded-full hover:bg-gray-600 dark:border-gray-800" href="#">
-                                        +{request.imageUrls.length - 3}
-                                    </a>
-                                )}
+                                <div className="flex items-start gap-4">
+                                     <Image
+                                        src={request.imageUrls[0]}
+                                        alt={request.title}
+                                        width={64}
+                                        height={64}
+                                        className="hidden sm:block rounded-md object-cover"
+                                     />
+                                    <div>
+                                        <div className="font-medium">{request.title}</div>
+                                        <div className="text-sm text-muted-foreground">{request.category}</div>
+                                         <p className="max-w-xs truncate text-xs text-muted-foreground mt-1 hidden lg:block">{request.description}</p>
+                                    </div>
                                 </div>
                             </TableCell>
                              <TableCell>₹{request.price.toLocaleString('en-IN')}</TableCell>
-                             <TableCell>
-                                <Badge variant="outline" className="flex items-center gap-2">
-                                     <div className={`h-2.5 w-2.5 rounded-full ${statusConfig[request.status].color}`} />
+                             <TableCell className="hidden md:table-cell">
+                                <Badge variant="outline" className={`gap-2 border ${statusConfig[request.status].color}`}>
+                                     {statusConfig[request.status].icon}
                                      {request.status}
                                 </Badge>
                              </TableCell>
                               <TableCell>
                                 <DropdownMenu>
-                                    <DropdownMenuTrigger asChild>
-                                        <Button variant="ghost" size="sm">Actions</Button>
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent>
-                                        <DropdownMenuLabel>Change Status</DropdownMenuLabel>
-                                        <DropdownMenuItem>Approve</DropdownMenuItem>
-                                        <DropdownMenuItem>Reject</DropdownMenuItem>
-                                    </DropdownMenuContent>
+                                  <DropdownMenuTrigger asChild>
+                                    <Button aria-haspopup="true" size="icon" variant="ghost">
+                                      <MoreHorizontal className="h-4 w-4" />
+                                      <span className="sr-only">Toggle menu</span>
+                                    </Button>
+                                  </DropdownMenuTrigger>
+                                  <DropdownMenuContent align="end">
+                                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                    <DropdownMenuItem>View Details</DropdownMenuItem>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem>Approve</DropdownMenuItem>
+                                    <DropdownMenuItem>Reject</DropdownMenuItem>
+                                  </DropdownMenuContent>
                                 </DropdownMenu>
                             </TableCell>
                         </TableRow>

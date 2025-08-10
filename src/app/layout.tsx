@@ -1,16 +1,14 @@
+
+'use client';
+
 import type { Metadata } from 'next';
+import { usePathname } from 'next/navigation';
 import './globals.css';
 import { cn } from '@/lib/utils';
 import { Toaster } from '@/components/ui/toaster';
 import Header from '@/components/layout/header';
 import Footer from '@/components/layout/footer';
 import { Inter, Space_Grotesk } from 'next/font/google';
-
-export const metadata: Metadata = {
-  title: 'KHELWAPAS - Marketplace for New & Pre-Owned Sports Gear',
-  description:
-    'Buy and sell new and used sports equipment. Get instant price estimates with our AI tool, enjoy free pickup, and shop quality-inspected gear.',
-};
 
 const inter = Inter({
   subsets: ['latin'],
@@ -24,11 +22,21 @@ const spaceGrotesk = Space_Grotesk({
   variable: '--font-space-grotesk',
 });
 
+// export const metadata: Metadata = {
+//   title: 'KHELWAPAS - Marketplace for New & Pre-Owned Sports Gear',
+//   description:
+//     'Buy and sell new and used sports equipment. Get instant price estimates with our AI tool, enjoy free pickup, and shop quality-inspected gear.',
+// };
+
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const pathname = usePathname();
+  const isAdminRoute = pathname.startsWith('/admin');
+  
   return (
     <html
       lang="en"
@@ -36,6 +44,11 @@ export default function RootLayout({
       className={`${inter.variable} ${spaceGrotesk.variable}`}
     >
       <head>
+         <title>KHELWAPAS - Marketplace for New & Pre-Owned Sports Gear</title>
+        <meta
+            name="description"
+            content="Buy and sell new and used sports equipment. Get instant price estimates with our AI tool, enjoy free pickup, and shop quality-inspected gear."
+        />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
           rel="preconnect"
@@ -55,9 +68,9 @@ export default function RootLayout({
         className={cn('min-h-screen bg-background font-body antialiased')}
       >
         <div className="relative flex min-h-dvh flex-col">
-          <Header />
-          <main className="flex-1">{children}</main>
-          <Footer />
+           {isAdminRoute ? null : <Header />}
+          <main className={cn("flex-1", { "bg-muted/40": isAdminRoute })}>{children}</main>
+          {isAdminRoute ? null : <Footer />}
         </div>
         <Toaster />
       </body>

@@ -2,10 +2,12 @@
 'use client';
 
 import Image from 'next/image';
+import Link from 'next/link';
+import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { BarChart, Package, ShoppingCart, Users, CheckCircle, Clock, XCircle, MoreHorizontal } from "lucide-react";
-import { sellRequests, type SellRequest } from '@/lib/sell-requests';
+import { sellRequests, type SellRequest, updateSellRequestStatus } from '@/lib/sell-requests';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -16,6 +18,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { useToast } from '@/hooks/use-toast';
+
 
 const statusConfig: Record<SellRequest['status'], { icon: React.ReactNode; color: string; badge: string; }> = {
     Pending: { icon: <Clock className="h-3 w-3" />, color: "text-yellow-600 bg-yellow-100/60 border-yellow-500/30", badge: "bg-yellow-500" },
@@ -25,67 +29,87 @@ const statusConfig: Record<SellRequest['status'], { icon: React.ReactNode; color
 
 
 export default function AdminDashboardPage() {
+  const { toast } = useToast();
+  const [currentSellRequests, setCurrentSellRequests] = useState<SellRequest[]>(sellRequests);
+
+  const handleStatusChange = (id: string, status: 'Approved' | 'Rejected') => {
+    updateSellRequestStatus(id, status);
+    setCurrentSellRequests([...sellRequests]);
+     toast({
+      title: `Request ${status}`,
+      description: `The sell request has been marked as ${status.toLowerCase()}.`,
+    });
+  }
+
   return (
-    <div className="flex min-h-screen w-full flex-col bg-muted/40">
+    <div className="flex min-h-screen w-full flex-col">
       <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6 py-4">
          <h1 className="font-headline text-2xl font-bold">Admin Dashboard</h1>
       </header>
       <main className="flex flex-1 flex-col gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
         <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Total Revenue
-              </CardTitle>
-              <BarChart className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">₹1,250,345</div>
-              <p className="text-xs text-muted-foreground">
-                +20.1% from last month
-              </p>
-            </CardContent>
-          </Card>
-           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                New Users
-              </CardTitle>
-              <Users className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">+2,350</div>
-              <p className="text-xs text-muted-foreground">
-                +180.1% from last month
-              </p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Orders</CardTitle>
-              <ShoppingCart className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">+12,234</div>
-              <p className="text-xs text-muted-foreground">
-                +19% from last month
-              </p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Products Listed
-              </CardTitle>
-              <Package className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">+573</div>
-              <p className="text-xs text-muted-foreground">
-                +201 since last hour
-              </p>
-            </CardContent>
-          </Card>
+          <Link href="/admin/revenue">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Total Revenue
+                </CardTitle>
+                <BarChart className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">₹1,250,345</div>
+                <p className="text-xs text-muted-foreground">
+                  +20.1% from last month
+                </p>
+              </CardContent>
+            </Card>
+          </Link>
+           <Link href="/admin/users">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  New Users
+                </CardTitle>
+                <Users className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">+2,350</div>
+                <p className="text-xs text-muted-foreground">
+                  +180.1% from last month
+                </p>
+              </CardContent>
+            </Card>
+          </Link>
+          <Link href="/admin/orders">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Orders</CardTitle>
+                <ShoppingCart className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">+12,234</div>
+                <p className="text-xs text-muted-foreground">
+                  +19% from last month
+                </p>
+              </CardContent>
+            </Card>
+          </Link>
+          <Link href="/admin/products">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Products Listed
+                </CardTitle>
+                <Package className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">+573</div>
+                <p className="text-xs text-muted-foreground">
+                  +201 since last hour
+                </p>
+              </CardContent>
+            </Card>
+          </Link>
         </div>
         <Card>
             <CardHeader>
@@ -106,7 +130,7 @@ export default function AdminDashboardPage() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {sellRequests.map((request) => (
+                        {currentSellRequests.map((request) => (
                         <TableRow key={request.id}>
                            <TableCell className="hidden sm:table-cell">
                                 <div className="font-medium">{request.fullName}</div>
@@ -145,10 +169,12 @@ export default function AdminDashboardPage() {
                                   </DropdownMenuTrigger>
                                   <DropdownMenuContent align="end">
                                     <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                    <DropdownMenuItem>View Details</DropdownMenuItem>
+                                    <DropdownMenuItem asChild>
+                                      <Link href={`/admin/requests/${request.id}`}>View Details</Link>
+                                    </DropdownMenuItem>
                                     <DropdownMenuSeparator />
-                                    <DropdownMenuItem>Approve</DropdownMenuItem>
-                                    <DropdownMenuItem>Reject</DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => handleStatusChange(request.id, 'Approved')}>Approve</DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => handleStatusChange(request.id, 'Rejected')}>Reject</DropdownMenuItem>
                                   </DropdownMenuContent>
                                 </DropdownMenu>
                             </TableCell>

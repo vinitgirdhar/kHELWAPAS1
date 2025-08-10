@@ -15,7 +15,7 @@ export type SellRequest = {
 
 // This is a mock database to store sell requests in memory.
 // In a real application, this would be a database like SQLite, PostgreSQL, etc.
-export const sellRequests: SellRequest[] = [
+export let sellRequests: SellRequest[] = [
     {
         id: 'req-1',
         fullName: 'Ravi Kumar',
@@ -83,3 +83,10 @@ export const addSellRequest = (request: Omit<SellRequest, 'id' | 'status' | 'ima
     sellRequests.unshift(newRequest); // Add to the beginning of the array
     return newRequest;
 }
+
+export const updateSellRequestStatus = (id: string, status: 'Approved' | 'Rejected') => {
+    const requestIndex = sellRequests.findIndex(req => req.id === id);
+    if (requestIndex !== -1) {
+        sellRequests[requestIndex].status = status;
+    }
+};

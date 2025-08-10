@@ -3,6 +3,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -30,6 +31,7 @@ type AdminLoginFormValues = z.infer<typeof adminLoginSchema>;
 export default function AdminLoginPage() {
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+  const router = useRouter();
 
   const form = useForm<AdminLoginFormValues>({
     resolver: zodResolver(adminLoginSchema),
@@ -46,13 +48,13 @@ export default function AdminLoginPage() {
     setLoading(false);
     
     // In a real app, you'd handle success/error from an API
-    if (data.email === 'admin@khelwapas.com' && data.password === 'admin') {
+    if (data.email === 'admin@khelwapas.com' && data.password === 'admin123') {
          toast({
             title: 'Admin Login Successful!',
             description: "Welcome to the dashboard.",
         });
         // Redirect to admin dashboard
-        // In a real app: router.push('/admin/dashboard');
+        router.push('/admin/dashboard');
     } else {
          toast({
             variant: 'destructive',
@@ -82,7 +84,7 @@ export default function AdminLoginPage() {
                   <FormItem>
                     <FormLabel>Email Address</FormLabel>
                     <FormControl>
-                      <Input type="email" placeholder="admin@example.com" {...field} />
+                      <Input type="email" placeholder="admin@khelwapas.com" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

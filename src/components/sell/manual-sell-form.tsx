@@ -26,10 +26,11 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Loader2, UploadCloud, X, Send } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 
 const manualSellSchema = z.object({
   fullName: z.string().min(2, 'Full name is required.'),
@@ -74,12 +75,21 @@ export default function ManualSellForm() {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     accept: { 'image/*': [] },
     onDrop: acceptedFiles => {
+      if (files.length + acceptedFiles.length > 10) {
+        toast({
+          variant: 'destructive',
+          title: 'Too many images',
+          description: 'You can upload a maximum of 10 images.',
+        });
+        return;
+      }
       setFiles(prevFiles => [
           ...prevFiles,
           ...acceptedFiles.map(file => Object.assign(file, {
               preview: URL.createObjectURL(file)
           }))
       ]);
+      form.clearErrors('root.images');
     }
   });
 
@@ -88,6 +98,11 @@ export default function ManualSellForm() {
   };
   
   async function onSubmit(data: ManualSellFormValues) {
+    if (files.length < 5) {
+        form.setError('root.images', { type: 'manual', message: 'Please upload at least 5 images.' });
+        return;
+    }
+      
     setLoading(true);
 
     const formData = new FormData();
@@ -210,19 +225,22 @@ export default function ManualSellForm() {
                     )} />
 
                     <div>
-                        <FormLabel>Upload Images</FormLabel>
-                        <div {...getRootProps()} className={cn("mt-2 flex justify-center rounded-lg border-2 border-dashed border-input px-6 py-10 cursor-pointer hover:border-primary transition-colors", isDragActive && "border-primary bg-primary/10")}>
+                        <FormLabel>Upload Images (Min 5, Max 10)</FormLabel>
+                        <div {...getRootProps()} className={cn("mt-2 flex justify-center rounded-lg border-2 border-dashed border-input px-6 py-10 cursor-pointer hover:border-primary transition-colors", isDragActive && "border-primary bg-primary/10", form.formState.errors.root?.images && "border-destructive")}>
                             <div className="text-center">
                                 <UploadCloud className="mx-auto h-12 w-12 text-muted-foreground" />
                                 <p className="mt-4 text-sm text-muted-foreground">
-                                    {isDragActive ? 'Drop the files here...' : 'Drag & drop some files here, or click to select files'}
+                                    {isDragActive ? 'Drop the files here...' : 'Drag & drop images here, or click to select'}
                                 </p>
-                                <p className="text-xs text-muted-foreground/80">PNG, JPG, GIF up to 10MB</p>
+                                <p className="text-xs text-muted-foreground/80">PNG, JPG, up to 10MB each</p>
                                 <Input {...getInputProps()} />
                             </div>
                         </div>
+                        {form.formState.errors.root?.images && (
+                            <p className="text-sm font-medium text-destructive mt-2">{form.formState.errors.root.images.message}</p>
+                        )}
                          {files.length > 0 && (
-                            <div className="mt-4 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4">
+                            <div className="mt-4 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-4">
                                 {files.map((file, i) => (
                                     <div key={i} className="relative aspect-square group">
                                         <Image src={file.preview} alt={`Preview ${i}`} fill className="object-cover rounded-md" onLoad={() => URL.revokeObjectURL(file.preview)} />
@@ -270,11 +288,10 @@ export default function ManualSellForm() {
                         )} />
                     )}
 
-                    <Button type="submit" size="lg" className="w-full font-bold" disabled={loading}>
+                    <Button type="submit" size="lg" className="w-full font-bold gap-2" disabled={loading}>
                         {loading ? <Loader2 className="animate-spin" /> : <Send />}
                         Submit Request
                     </Button>
-
                 </form>
             </Form>
         </CardContent>

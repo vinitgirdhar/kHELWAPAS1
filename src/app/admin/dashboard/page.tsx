@@ -1,6 +1,27 @@
 
+'use client';
+
+import Image from 'next/image';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { BarChart, Package, ShoppingCart, Users } from "lucide-react";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { BarChart, Package, ShoppingCart, Users, CheckCircle, Clock, XCircle } from "lucide-react";
+import { sellRequests, type SellRequest } from '@/lib/sell-requests';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+
+const statusConfig = {
+    Pending: { icon: <Clock className="h-4 w-4" />, color: "bg-yellow-500" },
+    Approved: { icon: <CheckCircle className="h-4 w-4" />, color: "bg-green-500" },
+    Rejected: { icon: <XCircle className="h-4 w-4" />, color: "bg-red-500" },
+};
+
 
 export default function AdminDashboardPage() {
   return (
@@ -71,7 +92,74 @@ export default function AdminDashboardPage() {
                 <CardDescription>A list of the most recent manual sell requests.</CardDescription>
             </CardHeader>
             <CardContent>
-                <p>Sell request table will be displayed here.</p>
+                 <Table>
+                    <TableHeader>
+                        <TableRow>
+                        <TableHead>Seller</TableHead>
+                        <TableHead>Item</TableHead>
+                        <TableHead>Description</TableHead>
+                        <TableHead>Images</TableHead>
+                        <TableHead>Asking Price</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Actions</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {sellRequests.map((request) => (
+                        <TableRow key={request.id}>
+                            <TableCell>
+                                <div className="font-medium">{request.fullName}</div>
+                                <div className="text-sm text-muted-foreground">{request.email}</div>
+                            </TableCell>
+                            <TableCell>
+                                <div className="font-medium">{request.title}</div>
+                                <div className="text-sm text-muted-foreground">{request.category}</div>
+                            </TableCell>
+                             <TableCell>
+                                <p className="max-w-xs truncate">{request.description}</p>
+                            </TableCell>
+                            <TableCell>
+                                <div className="flex -space-x-4 rtl:space-x-reverse">
+                                {request.imageUrls.slice(0, 3).map((url, index) => (
+                                    <Image
+                                        key={index}
+                                        src={url}
+                                        alt={`Item image ${index + 1}`}
+                                        width={40}
+                                        height={40}
+                                        className="w-10 h-10 border-2 border-white rounded-full dark:border-gray-800 object-cover"
+                                    />
+                                ))}
+                                {request.imageUrls.length > 3 && (
+                                     <a className="flex items-center justify-center w-10 h-10 text-xs font-medium text-white bg-gray-700 border-2 border-white rounded-full hover:bg-gray-600 dark:border-gray-800" href="#">
+                                        +{request.imageUrls.length - 3}
+                                    </a>
+                                )}
+                                </div>
+                            </TableCell>
+                             <TableCell>₹{request.price.toLocaleString('en-IN')}</TableCell>
+                             <TableCell>
+                                <Badge variant="outline" className="flex items-center gap-2">
+                                     <div className={`h-2.5 w-2.5 rounded-full ${statusConfig[request.status].color}`} />
+                                     {request.status}
+                                </Badge>
+                             </TableCell>
+                              <TableCell>
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button variant="ghost" size="sm">Actions</Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent>
+                                        <DropdownMenuLabel>Change Status</DropdownMenuLabel>
+                                        <DropdownMenuItem>Approve</DropdownMenuItem>
+                                        <DropdownMenuItem>Reject</DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                            </TableCell>
+                        </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
             </CardContent>
         </Card>
       </main>

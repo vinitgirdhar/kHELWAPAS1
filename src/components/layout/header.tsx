@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -28,6 +29,7 @@ const mainNav = [
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // temp state
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -46,7 +48,7 @@ export default function Header() {
             </Link>
           ))}
         </nav>
-        <div className="ml-auto flex items-center gap-4">
+        <div className="ml-auto flex items-center gap-2">
           <div className="hidden items-center gap-2 md:flex">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -56,10 +58,21 @@ export default function Header() {
               <ShoppingCart className="h-5 w-5" />
               <span className="sr-only">Cart</span>
             </Button>
-            <Button variant="ghost" size="icon">
-              <UserCircle className="h-5 w-5" />
-              <span className="sr-only">Account</span>
-            </Button>
+            {isLoggedIn ? (
+               <Button variant="ghost" size="icon">
+                <UserCircle className="h-5 w-5" />
+                <span className="sr-only">Account</span>
+              </Button>
+            ) : (
+              <div className='flex items-center gap-2'>
+                <Button variant="ghost" asChild>
+                  <Link href="/login">Login</Link>
+                </Button>
+                <Button asChild>
+                   <Link href="/register">Register</Link>
+                </Button>
+              </div>
+            )}
           </div>
           <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
             <SheetTrigger asChild className="md:hidden">
@@ -97,9 +110,11 @@ export default function Header() {
                         <ShoppingCart className="h-6 w-6" />
                         <span className="sr-only">Cart</span>
                       </Button>
-                      <Button variant="ghost" size="icon" className="h-10 w-10">
-                        <UserCircle className="h-6 w-6" />
-                        <span className="sr-only">Account</span>
+                      <Button variant="ghost" size="icon" className="h-10 w-10" asChild>
+                        <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
+                          <UserCircle className="h-6 w-6" />
+                          <span className="sr-only">Account</span>
+                        </Link>
                       </Button>
                   </div>
                 </div>

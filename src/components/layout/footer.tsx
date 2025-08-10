@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -71,7 +72,7 @@ export default function Footer() {
           </div>
         </div>
         <div className="mt-12 border-t pt-8 text-center text-sm text-muted-foreground">
-          <p>&copy; {currentYear} KHELWAPAS. All Rights Reserved.</p>
+          <p>&copy; {currentYear} KHELWAPAS. All Rights Reserved. | <Link href="/admin/login" className="hover:text-primary hover:underline">Admin Login</Link></p>
         </div>
       </div>
     </footer>

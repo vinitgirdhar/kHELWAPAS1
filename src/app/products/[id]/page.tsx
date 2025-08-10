@@ -59,7 +59,7 @@ export default function ProductDetailPage() {
 
   const handleBuyNow = () => {
     addItem({ ...product, quantity });
-    router.push('/checkout');
+    router.push('/cart');
   };
 
   const suggestedProducts = allProducts.filter(

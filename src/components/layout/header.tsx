@@ -97,7 +97,7 @@ export default function Header() {
               <Input placeholder="Search gear..." className="pl-9 w-48" />
             </div>
             <Button variant="ghost" size="icon" asChild>
-              <Link href="/checkout" className="relative">
+              <Link href="/cart" className="relative">
                 <ShoppingCart className="h-5 w-5" />
                  {isMounted && totalItems > 0 && (
                   <Badge variant="destructive" className="absolute -top-2 -right-2 h-5 w-5 justify-center p-0">{totalItems}</Badge>
@@ -173,7 +173,7 @@ export default function Header() {
                   </div>
                   <div className="flex items-center justify-around">
                      <Button variant="ghost" size="icon" className="h-10 w-10 relative" asChild>
-                       <Link href="/checkout">
+                       <Link href="/cart">
                           <ShoppingCart className="h-6 w-6" />
                           {isMounted && totalItems > 0 && (
                             <Badge variant="destructive" className="absolute -top-1 -right-1 h-5 w-5 justify-center p-0">{totalItems}</Badge>

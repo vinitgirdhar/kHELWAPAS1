@@ -84,17 +84,11 @@ const categories = [
 
 export default function FeaturedProducts() {
   const [activeCategory, setActiveCategory] = useState('All');
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
 
   useEffect(() => {
     setLoading(true);
-    // Simulate network delay
     const timer = setTimeout(() => {
       if (activeCategory === 'All') {
         setFilteredProducts(allProducts);
@@ -108,44 +102,6 @@ export default function FeaturedProducts() {
 
     return () => clearTimeout(timer);
   }, [activeCategory]);
-  
-  if (!isMounted) {
-    return (
-        <section className="py-20 bg-muted/20">
-            <div className="container">
-                <div className="text-center mb-12">
-                    <h2 className="font-headline text-3xl md:text-4xl font-bold tracking-tight">
-                        Featured Gear
-                    </h2>
-                    <p className="text-lg text-muted-foreground mt-2 max-w-2xl mx-auto">
-                        Top picks from our collection, ready for their next game.
-                    </p>
-                </div>
-                 <div className="flex justify-center flex-wrap gap-2 mb-8">
-                    {categories.map((category) => (
-                        <Button
-                          key={category.name}
-                          variant={'outline'}
-                          className="gap-2"
-                        >
-                          {category.icon}
-                          <span>{category.name}</span>
-                        </Button>
-                    ))}
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {Array.from({ length: 6 }).map((_, i) => (
-                        <div key={i} className="flex flex-col gap-4">
-                            <Skeleton className="h-64 w-full" />
-                            <Skeleton className="h-6 w-3/4" />
-                            <Skeleton className="h-6 w-1/4" />
-                        </div>
-                    ))}
-                </div>
-            </div>
-        </section>
-    );
-  }
 
 
   return (
@@ -166,6 +122,7 @@ export default function FeaturedProducts() {
               variant={activeCategory === category.name ? 'default' : 'outline'}
               onClick={() => setActiveCategory(category.name)}
               className="gap-2"
+              disabled={loading}
             >
               {category.icon}
               <span>{category.name}</span>

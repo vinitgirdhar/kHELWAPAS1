@@ -1,25 +1,32 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
   Menu,
   Search,
   ShoppingCart,
   UserCircle,
-  X,
+  LogOut,
 } from "lucide-react";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { KhelwapasLogo } from '@/components/icons/khelwapas-logo';
-import { cn } from '@/lib/utils';
 import {
   Sheet,
   SheetContent,
   SheetTrigger,
-
 } from '@/components/ui/sheet';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 const mainNav = [
   { href: '/shop/preowned', label: 'Shop Pre-Owned' },
@@ -29,7 +36,32 @@ const mainNav = [
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // temp state
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const router = useRouter();
+
+  useEffect(() => {
+    // Check localStorage on mount
+    const loggedIn = localStorage.getItem('isLoggedIn') === 'true';
+    setIsLoggedIn(loggedIn);
+
+    // Listen for storage changes to sync across tabs
+    const handleStorageChange = () => {
+      const loggedIn = localStorage.getItem('isLoggedIn') === 'true';
+      setIsLoggedIn(loggedIn);
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('isLoggedIn');
+    setIsLoggedIn(false);
+    router.push('/');
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -59,10 +91,25 @@ export default function Header() {
               <span className="sr-only">Cart</span>
             </Button>
             {isLoggedIn ? (
-               <Button variant="ghost" size="icon">
-                <UserCircle className="h-5 w-5" />
-                <span className="sr-only">Account</span>
-              </Button>
+               <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                     <Button variant="ghost" size="icon">
+                        <UserCircle className="h-5 w-5" />
+                        <span className="sr-only">Account</span>
+                      </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem>Profile</DropdownMenuItem>
+                    <DropdownMenuItem>Orders</DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={handleLogout} className="text-destructive">
+                       <LogOut className="mr-2 h-4 w-4"/>
+                       Logout
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
             ) : (
               <div className='flex items-center gap-2'>
                 <Button variant="ghost" asChild>

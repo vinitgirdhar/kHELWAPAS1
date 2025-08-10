@@ -3,6 +3,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -31,6 +32,7 @@ type RegisterFormValues = z.infer<typeof registerSchema>;
 export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+  const router = useRouter();
 
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
@@ -43,7 +45,7 @@ export default function RegisterPage() {
 
   async function onSubmit(data: RegisterFormValues) {
     setLoading(true);
-    // Simulate API call
+    // Simulate API call to register user
     await new Promise(resolve => setTimeout(resolve, 1000));
     setLoading(false);
     
@@ -52,7 +54,9 @@ export default function RegisterPage() {
       title: 'Registration Successful!',
       description: "You can now log in with your new account.",
     });
-     // Redirect user, e.g., router.push('/login')
+
+    // Redirect user to the login page
+    router.push('/login');
   }
 
   return (

@@ -3,6 +3,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -30,6 +31,7 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+  const router = useRouter();
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -45,12 +47,20 @@ export default function LoginPage() {
     await new Promise(resolve => setTimeout(resolve, 1000));
     setLoading(false);
     
-    // In a real app, you'd handle success/error from an API
+    // In a real app, you'd verify credentials against a database
+    // For this simulation, we'll just assume success
+    
+    localStorage.setItem('isLoggedIn', 'true');
+    // Dispatch a storage event to notify other tabs/windows
+    window.dispatchEvent(new Event('storage'));
+
     toast({
       title: 'Login Successful!',
       description: "Welcome back!",
     });
-    // Redirect user, e.g., router.push('/dashboard')
+
+    // Redirect user to the homepage
+    router.push('/');
   }
 
   return (

@@ -195,7 +195,7 @@ export default function PriceEstimator() {
                         </div>
                         <CardDescription>Estimated Resale Value</CardDescription>
                         <p className="font-headline text-5xl font-bold text-primary">
-                            ${result.estimatedPrice.toFixed(2)}
+                           ₹{result.estimatedPrice.toLocaleString('en-IN')}
                         </p>
                     </CardHeader>
                     <CardContent className="text-center">

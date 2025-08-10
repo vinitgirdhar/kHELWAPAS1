@@ -72,7 +72,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             </div>
             
             <div className="flex justify-between items-center">
-              <p className="text-2xl font-bold font-headline text-primary">${product.price}</p>
+              <p className="text-2xl font-bold font-headline text-primary">₹{product.price.toLocaleString('en-IN')}</p>
               <Button variant="ghost" size="sm" className="text-primary group-hover:translate-x-1 transition-transform">
                 View
                 <ArrowRight className="h-4 w-4 ml-1" />

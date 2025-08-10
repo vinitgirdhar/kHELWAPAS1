@@ -20,7 +20,7 @@ const EstimateResalePriceInputSchema = z.object({
 export type EstimateResalePriceInput = z.infer<typeof EstimateResalePriceInputSchema>;
 
 const EstimateResalePriceOutputSchema = z.object({
-  estimatedPrice: z.number().describe('The estimated resale price of the equipment in USD.'),
+  estimatedPrice: z.number().describe('The estimated resale price of the equipment in INR.'),
   confidenceLevel: z.string().describe('A qualitative measure of the confidence in the price estimate (e.g., High, Medium, Low).'),
   reasoning: z.string().describe('The reasoning behind the price estimate, considering condition, age, and market data.'),
 });
@@ -34,7 +34,7 @@ const estimateResalePricePrompt = ai.definePrompt({
   name: 'estimateResalePricePrompt',
   input: {schema: EstimateResalePriceInputSchema},
   output: {schema: EstimateResalePriceOutputSchema},
-  prompt: `You are an expert in pricing used sports equipment. Based on the following information, provide an estimated resale price in USD.
+  prompt: `You are an expert in pricing used sports equipment for the Indian market. Based on the following information, provide an estimated resale price in INR.
 
 Equipment Type: {{{equipmentType}}}
 Equipment Grade: {{{equipmentGrade}}}

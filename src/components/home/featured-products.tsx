@@ -16,7 +16,7 @@ const allProducts: Product[] = [
     name: 'Pro Grade Cricket Bat',
     category: 'Cricket',
     type: 'preowned',
-    price: 150,
+    price: 12000,
     grade: 'Excellent',
     image: 'https://placehold.co/600x600.png',
     dataAiHint: 'cricket bat',
@@ -27,7 +27,7 @@ const allProducts: Product[] = [
     name: 'Championship Football',
     category: 'Football',
     type: 'new',
-    price: 45,
+    price: 3600,
     image: 'https://placehold.co/600x600.png',
     dataAiHint: 'football ball',
     badge: 'Bestseller',
@@ -37,7 +37,7 @@ const allProducts: Product[] = [
     name: 'Featherlight Badminton Racket',
     category: 'Badminton',
     type: 'preowned',
-    price: 75,
+    price: 6000,
     grade: 'Good',
     image: 'https://placehold.co/600x600.png',
     dataAiHint: 'badminton racket',
@@ -47,7 +47,7 @@ const allProducts: Product[] = [
     name: 'Grand Slam Tennis Racket',
     category: 'Tennis',
     type: 'new',
-    price: 120,
+    price: 9600,
     image: 'https://placehold.co/600x600.png',
     dataAiHint: 'tennis racket',
   },
@@ -56,7 +56,7 @@ const allProducts: Product[] = [
     name: 'Starter Cricket Kit',
     category: 'Cricket',
     type: 'new',
-    price: 99,
+    price: 7920,
     image: 'https://placehold.co/600x600.png',
     dataAiHint: 'cricket equipment',
     badge: 'Sale',
@@ -66,7 +66,7 @@ const allProducts: Product[] = [
     name: 'Classic Leather Football',
     category: 'Football',
     type: 'preowned',
-    price: 25,
+    price: 2000,
     grade: 'Refurbished',
     image: 'https://placehold.co/600x600.png',
     dataAiHint: 'vintage football',
@@ -83,12 +83,11 @@ const categories = [
 ];
 
 export default function FeaturedProducts() {
-  const [activeCategory, setActiveCategory] = useState('All');
   const [loading, setLoading] = useState(true);
+  const [activeCategory, setActiveCategory] = useState('All');
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
 
   useEffect(() => {
-    setLoading(true);
     const timer = setTimeout(() => {
       if (activeCategory === 'All') {
         setFilteredProducts(allProducts);
@@ -98,11 +97,11 @@ export default function FeaturedProducts() {
         );
       }
       setLoading(false);
-    }, 300);
+    }, 300); 
 
     return () => clearTimeout(timer);
   }, [activeCategory]);
-
+  
 
   return (
     <section className="py-20 bg-muted/20">
@@ -120,9 +119,11 @@ export default function FeaturedProducts() {
             <Button
               key={category.name}
               variant={activeCategory === category.name ? 'default' : 'outline'}
-              onClick={() => setActiveCategory(category.name)}
+              onClick={() => {
+                setLoading(true);
+                setActiveCategory(category.name);
+              }}
               className="gap-2"
-              disabled={loading}
             >
               {category.icon}
               <span>{category.name}</span>

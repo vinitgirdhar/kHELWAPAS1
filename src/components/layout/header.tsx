@@ -27,6 +27,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { useCart } from '@/hooks/use-cart';
+import { Badge } from '../ui/badge';
 
 const mainNav = [
   { href: '/shop/preowned', label: 'Shop Pre-Owned' },
@@ -37,7 +39,13 @@ const mainNav = [
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { items } = useCart();
   const router = useRouter();
+  
+  const [isMounted, setIsMounted] = useState(false);
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   useEffect(() => {
     // Check localStorage on mount
@@ -62,6 +70,8 @@ export default function Header() {
     setIsLoggedIn(false);
     router.push('/');
   };
+  
+  const totalItems = items.reduce((total, item) => total + item.quantity, 0);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -86,9 +96,14 @@ export default function Header() {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input placeholder="Search gear..." className="pl-9 w-48" />
             </div>
-            <Button variant="ghost" size="icon">
-              <ShoppingCart className="h-5 w-5" />
-              <span className="sr-only">Cart</span>
+            <Button variant="ghost" size="icon" asChild>
+              <Link href="/checkout" className="relative">
+                <ShoppingCart className="h-5 w-5" />
+                 {isMounted && totalItems > 0 && (
+                  <Badge variant="destructive" className="absolute -top-2 -right-2 h-5 w-5 justify-center p-0">{totalItems}</Badge>
+                 )}
+                <span className="sr-only">Cart</span>
+              </Link>
             </Button>
             {isLoggedIn ? (
                <DropdownMenu>
@@ -157,9 +172,14 @@ export default function Header() {
                     <Input placeholder="Search gear..." className="pl-9" />
                   </div>
                   <div className="flex items-center justify-around">
-                     <Button variant="ghost" size="icon" className="h-10 w-10">
-                        <ShoppingCart className="h-6 w-6" />
-                        <span className="sr-only">Cart</span>
+                     <Button variant="ghost" size="icon" className="h-10 w-10 relative" asChild>
+                       <Link href="/checkout">
+                          <ShoppingCart className="h-6 w-6" />
+                          {isMounted && totalItems > 0 && (
+                            <Badge variant="destructive" className="absolute -top-1 -right-1 h-5 w-5 justify-center p-0">{totalItems}</Badge>
+                          )}
+                          <span className="sr-only">Cart</span>
+                        </Link>
                       </Button>
                       <Button variant="ghost" size="icon" className="h-10 w-10" asChild>
                         <Link href="/login" onClick={() => setMobileMenuOpen(false)}>

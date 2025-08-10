@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { ArrowLeft, Minus, Plus, ShoppingCart, Zap, Star, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -17,8 +18,14 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { useToast } from '@/hooks/use-toast';
+import { useCart } from '@/hooks/use-cart';
 
 export default function ProductDetailPage({ params }: { params: { id: string } }) {
+  const router = useRouter();
+  const { toast } = useToast();
+  const { addItem } = useCart();
+  
   const product = allProducts.find((p) => p.id === params.id);
   const [selectedImage, setSelectedImage] = useState(product?.images ? product.images[0] : product?.image);
   const [quantity, setQuantity] = useState(1);
@@ -36,6 +43,19 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
       </div>
     );
   }
+
+  const handleAddToCart = () => {
+    addItem({ ...product, quantity });
+    toast({
+      title: "Added to Cart!",
+      description: `${product.name} (x${quantity}) has been added to your cart.`,
+    });
+  };
+
+  const handleBuyNow = () => {
+    addItem({ ...product, quantity });
+    router.push('/checkout');
+  };
 
   const suggestedProducts = allProducts.filter(
     (p) => p.category === product.category && p.id !== product.id
@@ -149,10 +169,10 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
                     <Plus className="h-4 w-4" />
                 </Button>
             </div>
-            <Button size="lg" className="w-full sm:w-auto font-bold flex-grow">
+            <Button size="lg" className="w-full sm:w-auto font-bold flex-grow" onClick={handleAddToCart}>
               <ShoppingCart className="mr-2" /> Add to Cart
             </Button>
-             <Button size="lg" variant="secondary" className="w-full sm:w-auto font-bold flex-grow">
+             <Button size="lg" variant="secondary" className="w-full sm:w-auto font-bold flex-grow" onClick={handleBuyNow}>
               <Zap className="mr-2" /> Buy Now
             </Button>
           </div>

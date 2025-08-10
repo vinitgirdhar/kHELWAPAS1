@@ -8,7 +8,7 @@ import {
   ShoppingCart,
   UserCircle,
   X,
-} from 'lucide-react';
+} from "lucide-react";
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { KhelwapasLogo } from '@/components/icons/khelwapas-logo';
@@ -17,6 +17,7 @@ import {
   Sheet,
   SheetContent,
   SheetTrigger,
+
 } from '@/components/ui/sheet';
 
 const mainNav = [

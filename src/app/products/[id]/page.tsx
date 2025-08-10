@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -24,17 +25,19 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
   const router = useRouter();
   const { addItem } = useCart();
   
-  const [product, setProduct] = useState<Product | null>(null);
-  const [selectedImage, setSelectedImage] = useState<string | undefined>(undefined);
+  // Find product synchronously, which is safer in Next.js 15+
+  const product = allProducts.find((p) => p.id === params.id) || null;
+
+  const [selectedImage, setSelectedImage] = useState<string | undefined>(product?.image);
   const [quantity, setQuantity] = useState(1);
 
   useEffect(() => {
-    const foundProduct = allProducts.find((p) => p.id === params.id);
-    if (foundProduct) {
-      setProduct(foundProduct);
-      setSelectedImage(foundProduct.image);
+    // This effect now only syncs the image when the product changes.
+    // This is useful if the user navigates between product pages.
+    if (product) {
+      setSelectedImage(product.image);
     }
-  }, [params.id]);
+  }, [product]);
 
 
   if (!product) {

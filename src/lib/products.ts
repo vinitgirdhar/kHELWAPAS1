@@ -138,7 +138,7 @@ export const allProducts: Product[] = [
     price: 7000,
     originalPrice: 15000,
     grade: 'B',
-    image: 'https://images.unsplash.com/photo-1541252260730-0472e8e01a7e?q=80&w=800&h=800&fit=crop',
+    image: 'https://images.unsplash.com/photo-1593341646782-e0b495cff86d?q=80&w=800&h=800&fit=crop',
     dataAiHint: 'hockey stick',
     description: 'Composite hockey stick with a mid-kick point. Used for one season, some scratches on the blade but structurally sound.',
      specs: {

@@ -1,3 +1,5 @@
+'use client';
+
 import PriceEstimator from "@/components/price-estimator";
 import SellingPoints from "@/components/sell/selling-points";
 import { Button } from "@/components/ui/button";

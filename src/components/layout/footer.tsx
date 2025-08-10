@@ -19,7 +19,9 @@ export default function Footer() {
       <div className="container py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 gap-8">
           <div className="lg:col-span-2 flex flex-col gap-4">
-            <KhelwapasLogo />
+            <Link href="/" aria-label="Khelwapas Home">
+              <KhelwapasLogo />
+            </Link>
             <p className="text-muted-foreground max-w-sm">
               The premier marketplace for new and pre-owned sports gear. Join our community and play on!
             </p>

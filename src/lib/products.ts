@@ -68,6 +68,7 @@ export const allProducts: Product[] = [
     price: 9600,
     image: 'https://images.unsplash.com/photo-1554062614-6da4fa67419f?q=80&w=800&h=800&fit=crop',
     dataAiHint: 'tennis racket',
+    badge: 'Bestseller',
     description: 'A brand new racket designed for power and spin. Ideal for intermediate to advanced players looking to dominate the court.',
     specs: {
       "Brand": "Head",
@@ -87,7 +88,7 @@ export const allProducts: Product[] = [
     badge: 'Sale',
     description: 'Complete cricket kit for beginners. Includes a Kashmir Willow bat, pads, gloves, helmet, and a kit bag. Everything you need to start playing.',
     specs: {
-      "Brand": "GM",
+      "Brand": "Local Makers",
       "Includes": "Bat, Pads, Gloves, Helmet, Bag",
       "Bat Material": "Kashmir Willow",
       "Size": "Full Size"
@@ -165,6 +166,40 @@ export const allProducts: Product[] = [
       "Material": "Composite Leather",
       "Size": "7",
       "Use": "Indoor/Outdoor"
+    }
+  },
+  {
+    id: '10',
+    name: 'Artisan-Made Yoga Mat',
+    category: 'Yoga',
+    type: 'new',
+    price: 4500,
+    image: 'https://images.unsplash.com/photo-1591291621223-376f0371a233?q=80&w=800&h=800&fit=crop',
+    dataAiHint: 'yoga mat',
+    badge: 'Sale',
+    description: 'Eco-friendly yoga mat crafted by local artisans. Made from natural tree rubber and jute fiber, offering superior grip and cushioning.',
+    specs: {
+      "Brand": "Local Makers",
+      "Material": "Natural Rubber & Jute",
+      "Thickness": "5mm",
+      "Dimensions": "72 x 24 inches"
+    }
+  },
+  {
+    id: '11',
+    name: 'Pro-Level Boxing Gloves',
+    category: 'Boxing',
+    type: 'new',
+    price: 8000,
+    image: 'https://images.unsplash.com/photo-1591117207234-37add9737965?q=80&w=800&h=800&fit=crop',
+    dataAiHint: 'boxing gloves',
+    badge: 'Bestseller',
+    description: 'Premium leather boxing gloves designed for professional training and sparring. Multi-layered foam padding for maximum shock absorption.',
+    specs: {
+      "Brand": "Everlast",
+      "Material": "Genuine Leather",
+      "Weight": "16 oz",
+      "Closure": "Lace-up"
     }
   }
 ];

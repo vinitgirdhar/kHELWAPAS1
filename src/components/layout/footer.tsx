@@ -1,3 +1,6 @@
+'use client';
+
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Github, Twitter, Instagram } from 'lucide-react';
 import { KhelwapasLogo } from '@/components/icons/khelwapas-logo';
@@ -5,6 +8,12 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
 export default function Footer() {
+  const [currentYear, setCurrentYear] = useState<number | null>(null);
+
+  useEffect(() => {
+    setCurrentYear(new Date().getFullYear());
+  }, []);
+
   return (
     <footer className="bg-muted/40 border-t">
       <div className="container py-12">
@@ -60,7 +69,7 @@ export default function Footer() {
           </div>
         </div>
         <div className="mt-12 border-t pt-8 text-center text-sm text-muted-foreground">
-          <p>&copy; {new Date().getFullYear()} KHELWAPAS. All Rights Reserved.</p>
+          <p>&copy; {currentYear || new Date().getFullYear()} KHELWAPAS. All Rights Reserved.</p>
         </div>
       </div>
     </footer>

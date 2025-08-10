@@ -7,21 +7,21 @@ const testimonials = [
   {
     name: "Rohan Sharma",
     role: "Cricketer",
-    avatar: "https://placehold.co/100x100.png",
+    avatar: "https://images.unsplash.com/photo-1587402120412-df5702caa356?q=80&w=100&h=100&fit=crop",
     dataAiHint: "indian man",
     testimonial: "Selling my old bat was so easy with Khelwapas. The pickup was on time, and I got the money in my account before the agent even left. Fantastic service!"
   },
   {
     name: "Priya Singh",
     role: "Football Parent",
-    avatar: "https://placehold.co/100x100.png",
+    avatar: "https://images.unsplash.com/photo-1610216705422-caa3fc269258?q=80&w=100&h=100&fit=crop",
     dataAiHint: "indian woman",
     testimonial: "I bought a pair of 'Excellent' grade football boots for my son. They looked almost new! The quality check is a game-changer. Will definitely buy again."
   },
   {
     name: "Ankit Desai",
     role: "Badminton Player",
-    avatar: "https://placehold.co/100x100.png",
+    avatar: "https://images.unsplash.com/photo-1557683316-973673baf926?q=80&w=100&h=100&fit=crop",
     dataAiHint: "man playing badminton",
     testimonial: "Found a high-end racket that I could never afford new. The 'Refurbished' tag was accurate, and it plays like a dream. This is the future of sports shopping."
   }

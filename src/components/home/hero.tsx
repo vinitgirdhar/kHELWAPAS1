@@ -38,7 +38,7 @@ export default function Hero() {
            <div className="absolute inset-0 bg-gradient-to-tl from-secondary/30 to-primary/20 rounded-3xl rotate-6 transform"></div>
            <div 
              className="relative h-full w-full bg-cover bg-center rounded-3xl shadow-2xl"
-             style={{ backgroundImage: "url('https://placehold.co/800x600.png')"}}
+             style={{ backgroundImage: "url('https://images.unsplash.com/photo-1565992441121-4367c2967103?q=80&w=800&h=600&fit=crop')"}}
              data-ai-hint="sports equipment action"
             >
               <div className="absolute inset-0 bg-black/10 rounded-3xl"></div>

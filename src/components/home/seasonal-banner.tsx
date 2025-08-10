@@ -8,7 +8,7 @@ export default function SeasonalBanner() {
       <div className="container py-12 px-6 text-center">
         <div 
           className="bg-primary/80 bg-blend-overlay bg-cover bg-center rounded-lg p-8 md:p-12"
-          style={{ backgroundImage: "url('https://placehold.co/1200x300.png')" }}
+          style={{ backgroundImage: "url('https://images.unsplash.com/photo-1579952516518-6c2eac461869?q=80&w=1200&h=300&fit=crop')" }}
           data-ai-hint="stadium lights rain"
         >
           <h2 className="font-headline text-3xl md:text-4xl font-bold tracking-tight">Monsoon Sports Gear Sale</h2>

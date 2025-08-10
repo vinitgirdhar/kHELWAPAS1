@@ -1,6 +1,7 @@
 
 'use client';
 
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -48,19 +49,29 @@ type PasswordFormValues = z.infer<typeof passwordFormSchema>;
 
 export default function ProfilePage() {
     const { toast } = useToast();
-
-    // In a real app, you would fetch user data here
-    const defaultValues: Partial<ProfileFormValues> = {
+    const [user, setUser] = useState<ProfileFormValues>({
         fullName: 'Rohan Sharma',
         email: 'rohan.sharma@example.com',
         phone: '9876543210'
-    };
+    });
+
+    useEffect(() => {
+        const storedUser = localStorage.getItem('userProfile');
+        if (storedUser) {
+            setUser(JSON.parse(storedUser));
+        }
+    }, []);
 
     const profileForm = useForm<ProfileFormValues>({
         resolver: zodResolver(profileFormSchema),
-        defaultValues,
+        values: user, // Use `values` to sync form with state
         mode: 'onChange',
     });
+
+    // This useEffect syncs the form when the user state changes
+    useEffect(() => {
+        profileForm.reset(user);
+    }, [user, profileForm]);
 
      const passwordForm = useForm<PasswordFormValues>({
         resolver: zodResolver(passwordFormSchema),
@@ -74,8 +85,9 @@ export default function ProfilePage() {
 
 
     function onProfileSubmit(data: ProfileFormValues) {
-        // In a real app, you'd call an API to update the user profile
-        console.log('Profile data submitted:', data);
+        // In a real app, you'd call an API. Here we use localStorage.
+        localStorage.setItem('userProfile', JSON.stringify(data));
+        setUser(data); // Update state to reflect changes
         toast({
             title: 'Profile Updated',
             description: 'Your details have been saved successfully.',
@@ -109,7 +121,7 @@ export default function ProfilePage() {
                 <div className="relative">
                     <Avatar className="h-24 w-24">
                         <AvatarImage src="https://images.unsplash.com/photo-1587402120412-df5702caa356?q=80&w=100&h=100&fit=crop" alt="User" />
-                        <AvatarFallback>RS</AvatarFallback>
+                        <AvatarFallback>{user.fullName.split(' ').map(n => n[0]).join('')}</AvatarFallback>
                     </Avatar>
                     <Button variant="outline" size="icon" className="absolute bottom-0 right-0 rounded-full bg-background">
                         <Camera className="h-4 w-4" />
@@ -117,7 +129,7 @@ export default function ProfilePage() {
                     </Button>
                 </div>
                 <div>
-                    <h3 className="text-xl font-bold font-headline">Rohan Sharma</h3>
+                    <h3 className="text-xl font-bold font-headline">{user.fullName}</h3>
                     <p className="text-sm text-muted-foreground">Joined on January 2024</p>
                 </div>
             </div>

@@ -12,9 +12,6 @@ export function KhelwapasLogo({ className, ...props }: SVGProps<SVGSVGElement> &
         height={40} 
         className="rounded-full"
       />
-      <div className="font-headline font-bold text-2xl tracking-tighter text-foreground">
-        KHEL<span className="text-accent">WAPAS</span>
-      </div>
     </div>
   );
 }

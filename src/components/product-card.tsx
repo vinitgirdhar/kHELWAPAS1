@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Star } from 'lucide-react';
 
 export type Product = {
   id: string;
@@ -11,7 +11,8 @@ export type Product = {
   category: string;
   type: 'new' | 'preowned';
   price: number;
-  grade?: 'Excellent' | 'Good' | 'Refurbished' | 'A' | 'B' | 'C' | 'D';
+  originalPrice?: number;
+  grade?: 'A' | 'B' | 'C' | 'D';
   image: string;
   images?: string[];
   badge?: 'Inspected' | 'Refurbished' | 'Bestseller' | 'Sale';
@@ -27,7 +28,7 @@ interface ProductCardProps {
 const getBadgeClass = (badge?: Product['badge']) => {
   switch (badge) {
     case 'Inspected':
-      return 'bg-[#10B981] text-white'; // Fresh Green
+      return 'bg-green-500 text-white';
     case 'Refurbished':
       return 'bg-blue-500 text-white';
     case 'Bestseller':
@@ -42,8 +43,8 @@ const getBadgeClass = (badge?: Product['badge']) => {
 export default function ProductCard({ product }: ProductCardProps) {
   return (
     <Card className="overflow-hidden group transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
-      <Link href={`/products/${product.id}`}>
-        <CardContent className="p-0">
+      <Link href={`/products/${product.id}`} className="flex flex-col h-full">
+        <CardContent className="p-0 flex flex-col flex-grow">
           <div className="relative">
             <Image
               src={product.image}
@@ -63,15 +64,19 @@ export default function ProductCard({ product }: ProductCardProps) {
                  <h3 className="font-headline text-lg font-semibold text-white truncate">{product.name}</h3>
              </div>
           </div>
-          <div className="p-4">
+          <div className="p-4 flex flex-col flex-grow">
             <div className="flex justify-between items-center mb-2">
               <p className="text-sm text-muted-foreground">{product.category}</p>
               {product.type === 'preowned' && product.grade && (
-                <Badge variant="outline">{product.grade}</Badge>
+                <Badge variant="outline" className="flex items-center gap-1.5">
+                  <Star className="h-3 w-3 text-yellow-500" /> Grade: {product.grade}
+                </Badge>
               )}
             </div>
             
-            <div className="flex justify-between items-center">
+            <div className="flex-grow"></div>
+
+            <div className="flex justify-between items-center mt-auto">
               <p className="text-2xl font-bold font-headline text-primary">₹{product.price.toLocaleString('en-IN')}</p>
               <Button variant="ghost" size="sm" className="text-primary group-hover:translate-x-1 transition-transform">
                 View

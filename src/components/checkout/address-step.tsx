@@ -2,7 +2,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Plus, CheckCircle, MapPin } from 'lucide-react';
 import { userAddresses as defaultAddresses, Address } from '@/lib/user-data';
@@ -10,10 +9,11 @@ import { useToast } from '@/hooks/use-toast';
 import { AddressDialog } from '@/components/profile/address-dialog';
 import { cn } from '@/lib/utils';
 import { Badge } from '../ui/badge';
+import { Skeleton } from '../ui/skeleton';
 
 interface AddressStepProps {
   selectedAddress: Address | null;
-  onSelectAddress: (address: Address) => void;
+  onSelectAddress: (address: Address | null) => void;
 }
 
 export default function AddressStep({ selectedAddress, onSelectAddress }: AddressStepProps) {
@@ -21,18 +21,22 @@ export default function AddressStep({ selectedAddress, onSelectAddress }: Addres
     const [addresses, setAddresses] = useState<Address[]>([]);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [editingAddress, setEditingAddress] = useState<Address | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         const storedAddresses = localStorage.getItem('userAddresses');
         const loadedAddresses = storedAddresses ? JSON.parse(storedAddresses) : defaultAddresses;
         setAddresses(loadedAddresses);
 
-        // Auto-select the default address initially
-        const defaultAddress = loadedAddresses.find((a: Address) => a.isDefault);
-        if (defaultAddress) {
-            onSelectAddress(defaultAddress);
+        // Auto-select the default address initially if no address is already selected
+        if (!selectedAddress) {
+            const defaultAddress = loadedAddresses.find((a: Address) => a.isDefault);
+            if (defaultAddress) {
+                onSelectAddress(defaultAddress);
+            }
         }
-    }, [onSelectAddress]);
+        setIsLoading(false);
+    }, []); // Removed dependencies to only run once on mount
 
     const updateLocalStorage = (updatedAddresses: Address[]) => {
         localStorage.setItem('userAddresses', JSON.stringify(updatedAddresses));
@@ -73,39 +77,46 @@ export default function AddressStep({ selectedAddress, onSelectAddress }: Addres
             </div>
         </div>
         
-        <div className="space-y-4">
-            {addresses.map((address) => (
-            <div
-                key={address.id}
-                className={cn(
-                "p-4 border rounded-lg flex justify-between items-start cursor-pointer transition-all",
-                selectedAddress?.id === address.id ? "border-primary ring-2 ring-primary/50" : "hover:border-primary/50"
-                )}
-                onClick={() => onSelectAddress(address)}
-            >
-                <div className="flex gap-4">
-                    <MapPin className={cn("h-6 w-6 mt-1", selectedAddress?.id === address.id ? "text-primary" : "text-muted-foreground")} />
-                    <div>
-                        <div className="flex items-center gap-3">
-                            <p className="font-semibold">{address.name}</p>
-                            {address.isDefault && ( <Badge variant="secondary">Default</Badge> )}
-                        </div>
-                        <p className="text-muted-foreground text-sm mt-1">
-                            {address.street}, {address.city}, {address.state} - {address.zip}
-                        </p>
-                        <p className="text-muted-foreground text-sm">Phone: {address.phone}</p>
-                    </div>
-                </div>
-                {selectedAddress?.id === address.id && (
-                    <CheckCircle className="h-6 w-6 text-green-500" />
-                )}
+        {isLoading ? (
+            <div className="space-y-4">
+                <Skeleton className="h-24 w-full" />
+                <Skeleton className="h-10 w-full" />
             </div>
-            ))}
-            <Button variant="outline" className="w-full" onClick={() => handleOpenDialog()}>
-                <Plus className="mr-2 h-4 w-4"/>
-                Add New Address
-            </Button>
-        </div>
+        ) : (
+            <div className="space-y-4">
+                {addresses.map((address) => (
+                <div
+                    key={address.id}
+                    className={cn(
+                    "p-4 border rounded-lg flex justify-between items-start cursor-pointer transition-all",
+                    selectedAddress?.id === address.id ? "border-primary ring-2 ring-primary/50" : "hover:border-primary/50"
+                    )}
+                    onClick={() => onSelectAddress(address)}
+                >
+                    <div className="flex gap-4">
+                        <MapPin className={cn("h-6 w-6 mt-1 flex-shrink-0", selectedAddress?.id === address.id ? "text-primary" : "text-muted-foreground")} />
+                        <div>
+                            <div className="flex items-center gap-3">
+                                <p className="font-semibold">{address.name}</p>
+                                {address.isDefault && ( <Badge variant="secondary">Default</Badge> )}
+                            </div>
+                            <p className="text-muted-foreground text-sm mt-1">
+                                {address.street}, {address.city}, {address.state} - {address.zip}
+                            </p>
+                            <p className="text-muted-foreground text-sm">Phone: {address.phone}</p>
+                        </div>
+                    </div>
+                    {selectedAddress?.id === address.id && (
+                        <CheckCircle className="h-6 w-6 text-green-500 flex-shrink-0" />
+                    )}
+                </div>
+                ))}
+                <Button variant="outline" className="w-full" onClick={() => handleOpenDialog()}>
+                    <Plus className="mr-2 h-4 w-4"/>
+                    Add New Address
+                </Button>
+            </div>
+        )}
 
         <AddressDialog 
             isOpen={isDialogOpen}

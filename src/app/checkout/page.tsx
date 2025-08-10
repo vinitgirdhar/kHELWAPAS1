@@ -29,10 +29,14 @@ export default function CheckoutPage() {
     }
   }, []);
 
-  const handleSelectAddress = (address: Address) => {
+  const handleSelectAddress = (address: Address | null) => {
     setSelectedAddress(address);
     // Store selected address to persist it if user navigates away and comes back
-    sessionStorage.setItem('selectedAddress', JSON.stringify(address));
+    if (address) {
+      sessionStorage.setItem('selectedAddress', JSON.stringify(address));
+    } else {
+      sessionStorage.removeItem('selectedAddress');
+    }
   }
 
   const handleContinueToPayment = () => {
@@ -43,8 +47,12 @@ export default function CheckoutPage() {
     router.push('/checkout/payment');
   };
 
-  if (!isMounted || items.length === 0) {
-    // We can show a loading state or redirect if cart is empty
+  if (!isMounted) {
+    return null; // or a loading skeleton
+  }
+
+  if (items.length === 0 && isMounted) {
+    router.push('/cart');
     return null;
   }
 

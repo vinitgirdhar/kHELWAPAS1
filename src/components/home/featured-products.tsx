@@ -7,7 +7,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import {
   CricketBatIcon,
 } from '@/components/icons/cricket-bat';
-import { Goal } from 'lucide-react';
+import { Goal, DiscAlbum } from 'lucide-react';
 import { ShuttlecockIcon } from '../icons/shuttlecock';
 
 const allProducts: Product[] = [
@@ -79,16 +79,22 @@ const categories = [
   { name: 'Cricket', icon: <CricketBatIcon className="h-5 w-5" /> },
   { name: 'Football', icon: <Goal className="h-5 w-5" /> },
   { name: 'Badminton', icon: <ShuttlecockIcon className="h-5 w-5" /> },
-  { name: 'Tennis', icon: null },
+  { name: 'Tennis', icon: <DiscAlbum className="h-5 w-5" /> },
 ];
 
 export default function FeaturedProducts() {
   const [activeCategory, setActiveCategory] = useState('All');
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   useEffect(() => {
     setLoading(true);
+    // Simulate network delay
     const timer = setTimeout(() => {
       if (activeCategory === 'All') {
         setFilteredProducts(allProducts);
@@ -98,10 +104,49 @@ export default function FeaturedProducts() {
         );
       }
       setLoading(false);
-    }, 500); // Simulate network delay
+    }, 300);
 
     return () => clearTimeout(timer);
   }, [activeCategory]);
+  
+  if (!isMounted) {
+    return (
+        <section className="py-20 bg-muted/20">
+            <div className="container">
+                <div className="text-center mb-12">
+                    <h2 className="font-headline text-3xl md:text-4xl font-bold tracking-tight">
+                        Featured Gear
+                    </h2>
+                    <p className="text-lg text-muted-foreground mt-2 max-w-2xl mx-auto">
+                        Top picks from our collection, ready for their next game.
+                    </p>
+                </div>
+                 <div className="flex justify-center flex-wrap gap-2 mb-8">
+                    {categories.map((category) => (
+                        <Button
+                          key={category.name}
+                          variant={'outline'}
+                          className="gap-2"
+                        >
+                          {category.icon}
+                          <span>{category.name}</span>
+                        </Button>
+                    ))}
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {Array.from({ length: 6 }).map((_, i) => (
+                        <div key={i} className="flex flex-col gap-4">
+                            <Skeleton className="h-64 w-full" />
+                            <Skeleton className="h-6 w-3/4" />
+                            <Skeleton className="h-6 w-1/4" />
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </section>
+    );
+  }
+
 
   return (
     <section className="py-20 bg-muted/20">

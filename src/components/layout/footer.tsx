@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
 export default function Footer() {
-  const [currentYear, setCurrentYear] = useState<number | null>(null);
+  const [currentYear, setCurrentYear] = useState<number | string>('');
 
   useEffect(() => {
     setCurrentYear(new Date().getFullYear());
@@ -69,7 +69,7 @@ export default function Footer() {
           </div>
         </div>
         <div className="mt-12 border-t pt-8 text-center text-sm text-muted-foreground">
-          <p>&copy; {currentYear || new Date().getFullYear()} KHELWAPAS. All Rights Reserved.</p>
+          <p>&copy; {currentYear} KHELWAPAS. All Rights Reserved.</p>
         </div>
       </div>
     </footer>

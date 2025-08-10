@@ -74,6 +74,8 @@ export default function ProfilePage() {
 
 
     function onProfileSubmit(data: ProfileFormValues) {
+        // In a real app, you'd call an API to update the user profile
+        console.log('Profile data submitted:', data);
         toast({
             title: 'Profile Updated',
             description: 'Your details have been saved successfully.',
@@ -81,6 +83,11 @@ export default function ProfilePage() {
     }
 
     function onPasswordSubmit(data: PasswordFormValues) {
+        // In a real app, you'd call an API to change the password
+        console.log('Password data submitted:', {
+            currentPassword: data.currentPassword,
+            newPassword: data.newPassword,
+        });
         toast({
             title: 'Password Changed',
             description: 'Your password has been updated successfully.',

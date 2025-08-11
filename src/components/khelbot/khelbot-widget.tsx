@@ -83,28 +83,9 @@ export default function KhelbotWidget() {
 
     return (
         <TooltipProvider>
-            <div className="fixed bottom-6 right-6 z-50">
-                <div className={cn("transition-opacity duration-300", isOpen ? "opacity-0 pointer-events-none" : "opacity-100")}>
-                    <Tooltip>
-                        <TooltipTrigger asChild>
-                            <Button
-                                size="icon"
-                                className="rounded-full w-16 h-16 shadow-lg bg-primary hover:bg-primary/90"
-                                onClick={() => setIsOpen(true)}
-                                aria-label="Open KhelBot"
-                            >
-                                <MessageSquare className="h-8 w-8" />
-                            </Button>
-                        </TooltipTrigger>
-                        <TooltipContent side="left">
-                            <p>Need help? Ask KhelBot!</p>
-                        </TooltipContent>
-                    </Tooltip>
-                </div>
-
-
+            <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
                 <Card className={cn(
-                    "w-[380px] h-[600px] shadow-2xl flex flex-col transition-all duration-300 origin-bottom-right",
+                    "w-[380px] h-[600px] shadow-2xl flex flex-col transition-all duration-300 origin-bottom-right mb-4",
                     isOpen ? "scale-100 opacity-100" : "scale-95 opacity-0 pointer-events-none"
                 )}>
                     <CardHeader className="flex flex-row items-center justify-between p-4 border-b">
@@ -184,6 +165,24 @@ export default function KhelbotWidget() {
                         </div>
                     </CardContent>
                 </Card>
+
+                <div className={cn("transition-opacity duration-300", isOpen ? "opacity-0 pointer-events-none" : "opacity-100")}>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Button
+                                size="icon"
+                                className="rounded-full w-16 h-16 shadow-lg bg-primary hover:bg-primary/90"
+                                onClick={() => setIsOpen(true)}
+                                aria-label="Open KhelBot"
+                            >
+                                <MessageSquare className="h-8 w-8" />
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent side="left">
+                            <p>Need help? Ask KhelBot!</p>
+                        </TooltipContent>
+                    </Tooltip>
+                </div>
             </div>
         </TooltipProvider>
     );

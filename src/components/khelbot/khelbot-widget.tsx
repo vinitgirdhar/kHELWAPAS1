@@ -95,87 +95,99 @@ export default function KhelbotWidget() {
     return (
         <TooltipProvider>
             <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
-                <Card className={cn(
-                    "w-[380px] h-[600px] shadow-2xl flex flex-col transition-all duration-300 origin-bottom-right mb-4",
-                    isOpen ? "scale-100 opacity-100" : "scale-95 opacity-0 pointer-events-none"
-                )}>
-                    <CardHeader className="flex flex-row items-center justify-between p-4 border-b">
-                        <div className="flex items-center gap-3">
-                            <KhelwapasLogo className="w-10 h-10" />
-                            <div>
-                                <h3 className="font-headline font-semibold">KhelBot</h3>
-                                <p className="text-xs text-muted-foreground">AI Support</p>
-                            </div>
-                        </div>
-                        <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)}>
-                            <X className="h-5 w-5" />
-                        </Button>
-                    </CardHeader>
-                    <CardContent className="p-0 flex-1 flex flex-col">
-                        <ScrollArea className="flex-1 p-4" ref={scrollAreaRef}>
-                            <div className="space-y-4">
-                                {messages.map((message, index) => (
-                                    <div key={index} className={cn(
-                                        "flex gap-3 items-end",
-                                        message.role === 'user' ? "justify-end" : "justify-start"
-                                    )}>
-                                        {message.role === 'model' && (
-                                            <Avatar className="w-8 h-8">
-                                                <AvatarFallback>K</AvatarFallback>
-                                            </Avatar>
-                                        )}
-                                        <div className={cn(
-                                            "rounded-lg px-4 py-2 max-w-[80%] whitespace-pre-wrap",
-                                            message.role === 'user'
-                                                ? "bg-primary text-primary-foreground"
-                                                : "bg-muted"
-                                        )}>
-                                            {message.content}
-                                        </div>
-                                         {message.role === 'user' && (
-                                            <Avatar className="w-8 h-8">
-                                                <AvatarFallback>U</AvatarFallback>
-                                            </Avatar>
-                                        )}
-                                    </div>
-                                ))}
-                                {loading && (
-                                     <div className="flex gap-3 items-end justify-start">
-                                        <Avatar className="w-8 h-8">
-                                            <AvatarFallback>K</AvatarFallback>
-                                        </Avatar>
-                                        <div className="rounded-lg px-4 py-2 bg-muted">
-                                            <Loader2 className="h-5 w-5 animate-spin text-muted-foreground"/>
+                 <div
+                    className={cn(
+                        "w-[380px] h-[600px] transition-all duration-300 origin-bottom-right mb-4",
+                        isOpen ? "scale-100 opacity-100" : "scale-95 opacity-0 pointer-events-none"
+                    )}
+                 >
+                    <div className="glass-container w-full h-full rounded-lg">
+                        <div className="glass-filter"></div>
+                        <div className="glass-overlay"></div>
+                        <div className="glass-specular"></div>
+                        <div className="glass-content h-full">
+                            <Card className="w-full h-full bg-transparent border-0 shadow-none flex flex-col">
+                                <CardHeader className="flex flex-row items-center justify-between p-4 border-b border-white/20">
+                                    <div className="flex items-center gap-3">
+                                        <KhelwapasLogo className="w-10 h-10" />
+                                        <div>
+                                            <h3 className="font-headline font-semibold text-white">KhelBot</h3>
+                                            <p className="text-xs text-white/80">AI Support</p>
                                         </div>
                                     </div>
-                                )}
-                            </div>
-                        </ScrollArea>
-                        <div className="p-4 border-t">
-                             <div className="grid grid-cols-4 gap-2 mb-2">
-                                <Button variant="outline" size="sm" className="text-xs" onClick={() => handleSend("Help me with selling")}>Sell Help</Button>
-                                <Button variant="outline" size="sm" className="text-xs" onClick={() => handleSend("How do I track my order?")}>Track Order</Button>
-                                <Button variant="outline" size="sm" className="text-xs" onClick={() => handleSend("Questions about payment")}>Payments</Button>
-                                <Button variant="outline" size="sm" className="text-xs" onClick={() => handleSend("I need to report an issue")}>Report Issue</Button>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <Button variant="outline" size="icon" onClick={handleMicClick}>
-                                    <Mic className="h-5 w-5" />
-                                </Button>
-                                <Input
-                                    value={input}
-                                    onChange={(e) => setInput(e.target.value)}
-                                    onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-                                    placeholder="Ask a question..."
-                                    disabled={loading}
-                                />
-                                <Button onClick={() => handleSend()} disabled={loading || !input.trim()}>
-                                    <Send className="h-5 w-5" />
-                                </Button>
-                            </div>
+                                    <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)} className="text-white hover:bg-white/20 hover:text-white">
+                                        <X className="h-5 w-5" />
+                                    </Button>
+                                </CardHeader>
+                                <CardContent className="p-0 flex-1 flex flex-col">
+                                    <ScrollArea className="flex-1 p-4" ref={scrollAreaRef}>
+                                        <div className="space-y-4">
+                                            {messages.map((message, index) => (
+                                                <div key={index} className={cn(
+                                                    "flex gap-3 items-end",
+                                                    message.role === 'user' ? "justify-end" : "justify-start"
+                                                )}>
+                                                    {message.role === 'model' && (
+                                                        <Avatar className="w-8 h-8">
+                                                            <AvatarFallback className="bg-white/80 text-primary">K</AvatarFallback>
+                                                        </Avatar>
+                                                    )}
+                                                    <div className={cn(
+                                                        "rounded-lg px-4 py-2 max-w-[80%] whitespace-pre-wrap shadow",
+                                                        message.role === 'user'
+                                                            ? "bg-primary text-primary-foreground"
+                                                            : "bg-white/90 text-gray-800"
+                                                    )}>
+                                                        {message.content}
+                                                    </div>
+                                                    {message.role === 'user' && (
+                                                        <Avatar className="w-8 h-8">
+                                                            <AvatarFallback className="bg-white/80 text-primary">U</AvatarFallback>
+                                                        </Avatar>
+                                                    )}
+                                                </div>
+                                            ))}
+                                            {loading && (
+                                                <div className="flex gap-3 items-end justify-start">
+                                                    <Avatar className="w-8 h-8">
+                                                        <AvatarFallback className="bg-white/80 text-primary">K</AvatarFallback>
+                                                    </Avatar>
+                                                    <div className="rounded-lg px-4 py-2 bg-white/90">
+                                                        <Loader2 className="h-5 w-5 animate-spin text-muted-foreground"/>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </ScrollArea>
+                                    <div className="p-4 border-t border-white/20">
+                                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 mb-2">
+                                            <Button variant="outline" size="sm" className="text-xs bg-white/20 border-white/30 text-white hover:bg-white/30" onClick={() => handleSend("Help me with selling")}>Sell Help</Button>
+                                            <Button variant="outline" size="sm" className="text-xs bg-white/20 border-white/30 text-white hover:bg-white/30" onClick={() => handleSend("How do I track my order?")}>Track Order</Button>
+                                            <Button variant="outline" size="sm" className="text-xs bg-white/20 border-white/30 text-white hover:bg-white/30" onClick={() => handleSend("Questions about payment")}>Payments</Button>
+                                            <Button variant="outline" size="sm" className="text-xs bg-white/20 border-white/30 text-white hover:bg-white/30" onClick={() => handleSend("I need to report an issue")}>Report Issue</Button>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <Button variant="outline" size="icon" onClick={handleMicClick} className="bg-white/20 border-white/30 text-white hover:bg-white/30">
+                                                <Mic className="h-5 w-5" />
+                                            </Button>
+                                            <Input
+                                                value={input}
+                                                onChange={(e) => setInput(e.target.value)}
+                                                onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+                                                placeholder="Ask a question..."
+                                                disabled={loading}
+                                                className="bg-white/80 text-black placeholder:text-gray-500 ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                                            />
+                                            <Button onClick={() => handleSend()} disabled={loading || !input.trim()}>
+                                                <Send className="h-5 w-5" />
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </CardContent>
+                            </Card>
                         </div>
-                    </CardContent>
-                </Card>
+                    </div>
+                </div>
 
                  <div className={cn("transition-opacity duration-300", isOpen ? "opacity-0 pointer-events-none" : "opacity-100")}>
                     <Tooltip>

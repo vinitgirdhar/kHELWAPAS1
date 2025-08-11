@@ -24,21 +24,7 @@ type KhelbotChatOutput = string;
 export async function chatWithKhelbot(input: KhelbotChatInput): Promise<KhelbotChatOutput> {
   const { history, message } = input;
   
-  const KhelbotChatInputSchema = z.object({
-    message: z.string().describe('The user\'s message to KhelBot.'),
-    history: z.array(z.object({
-      role: z.enum(['user', 'model']),
-      content: z.array(z.object({
-        text: z.string()
-      }))
-    })).optional().describe('The conversation history.'),
-  });
-
-  const KhelbotChatOutputSchema = z.string().describe('The plain text response from KhelBot.');
-
-  const khelbot = ai.definePrompt({
-    name: 'khelbotPrompt',
-    system: `You are KhelBot, the official AI support agent for Khelwapas. You are friendly, confident, and proactive.
+  const khelbotSystemPrompt = `You are KhelBot, the official AI support agent for Khelwapas. You are friendly, confident, and proactive.
 You are always available via a floating chat icon on the bottom-right corner of every page. You work in text and voice mode.
 Speak clearly; no jargon unless the user is technical.
 
@@ -65,16 +51,13 @@ Voice Mode Rules:
 Prohibited Responses:
 - Never leave a message like: “I’m having trouble right now” without giving a backup method.
 - Never guess — if you don’t know, guide the user to an official source or escalate.
-`,
-    input: { schema: KhelbotChatInputSchema },
-    output: { schema: KhelbotChatOutputSchema },
-  });
+`;
 
   const response = await ai.generate({
     prompt: message,
     history: history,
-    model: 'gemini-1.5-pro',
-    system: khelbot.prompt,
+    model: 'googleai/gemini-1.5-pro',
+    system: khelbotSystemPrompt,
   });
 
   return response.text;

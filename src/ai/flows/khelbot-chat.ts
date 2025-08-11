@@ -73,8 +73,9 @@ Prohibited Responses:
   const response = await ai.generate({
     prompt: message,
     history: history,
-    model: khelbot
+    model: 'gemini-1.5-pro-latest',
+    system: khelbot.prompt,
   });
 
-  return response.text || "I'm sorry, I couldn't generate a response. Please try again.";
+  return response.text;
 }

@@ -107,7 +107,7 @@ export default function KhelbotWidget() {
                         <div className="glass-specular"></div>
                         <div className="glass-content h-full">
                            <Card className="w-full h-full bg-transparent border-0 shadow-none flex flex-col p-0">
-                                <CardHeader className="flex flex-row items-center justify-between p-4 border-b border-white/20 bg-black/30">
+                                <CardHeader className="flex flex-row items-center justify-between p-4 border-b border-white/20 bg-black/50">
                                     <div className="flex items-center gap-3">
                                         <KhelwapasLogo className="w-10 h-10" />
                                         <div>

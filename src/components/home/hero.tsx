@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { ArrowRight, ShoppingCart, Tag } from 'lucide-react';
+import Image from 'next/image';
 
 export default function Hero() {
   return (
@@ -33,16 +34,15 @@ export default function Hero() {
             Free pickup, instant payments, and a universe of gear awaits.
           </p>
         </div>
-        <div className="relative h-64 lg:h-auto lg:self-stretch">
-           <div className="absolute inset-0 bg-gradient-to-tr from-primary/30 to-accent/30 rounded-3xl -rotate-6 transform"></div>
-           <div className="absolute inset-0 bg-gradient-to-tl from-secondary/30 to-primary/20 rounded-3xl rotate-6 transform"></div>
-           <div 
-             className="relative h-full w-full bg-cover bg-center rounded-3xl shadow-2xl"
-             style={{ backgroundImage: "url('https://images.unsplash.com/photo-1565992441121-4367c2967103?q=80&w=800&h=600&fit=crop')"}}
-             data-ai-hint="sports equipment action"
-            >
-              <div className="absolute inset-0 bg-black/10 rounded-3xl"></div>
-            </div>
+        <div className="relative h-64 lg:h-auto lg:self-stretch flex items-center justify-center">
+          <Image
+            src="/images/head.png"
+            alt="Khel Wapas Logo"
+            width={500}
+            height={500}
+            className="object-contain max-w-[80%] lg:max-w-full"
+            priority
+          />
         </div>
       </div>
     </section>

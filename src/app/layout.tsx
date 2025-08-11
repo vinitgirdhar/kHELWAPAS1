@@ -9,6 +9,7 @@ import { Toaster } from '@/components/ui/toaster';
 import Header from '@/components/layout/header';
 import Footer from '@/components/layout/footer';
 import { Inter, Space_Grotesk } from 'next/font/google';
+import KhelbotWidget from '@/components/khelbot/khelbot-widget';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -75,6 +76,7 @@ export default function RootLayout({
           {isAdminRoute || isInvoiceRoute ? null : <Footer />}
         </div>
         <Toaster />
+        {!isAdminRoute && <KhelbotWidget />}
       </body>
     </html>
   );

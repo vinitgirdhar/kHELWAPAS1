@@ -76,10 +76,11 @@ If an issue is outside your scope or cannot be resolved, generate a structured r
     output: { schema: KhelbotChatOutputSchema },
   });
 
-  const { output } = await khelbot({
-    message: message,
+  const response = await ai.generate({
+    prompt: message,
     history: history,
+    model: khelbot
   });
 
-  return output || "I'm sorry, I couldn't generate a response. Please try again.";
+  return response.text || "I'm sorry, I couldn't generate a response. Please try again.";
 }

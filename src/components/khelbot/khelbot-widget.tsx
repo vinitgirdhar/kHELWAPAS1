@@ -17,6 +17,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { useToast } from '@/hooks/use-toast';
+
 
 type Message = {
     role: 'user' | 'model';
@@ -34,6 +36,7 @@ export default function KhelbotWidget() {
     const [messages, setMessages] = useState<Message[]>([]);
     const [loading, setLoading] = useState(false);
     const scrollAreaRef = useRef<HTMLDivElement>(null);
+    const { toast } = useToast();
 
     useEffect(() => {
         if(isOpen && messages.length === 0) {
@@ -51,24 +54,25 @@ export default function KhelbotWidget() {
         }
     }, [messages]);
 
-    const handleSend = async () => {
-        if (!input.trim()) return;
+    const handleSend = async (messageText?: string) => {
+        const textToSend = messageText || input;
+        if (!textToSend.trim()) return;
         
-        const userMessage: Message = { role: 'user', content: input };
+        const userMessage: Message = { role: 'user', content: textToSend };
         setMessages(prev => [...prev, userMessage]);
         setInput('');
         setLoading(true);
 
         try {
             // We need to format the history for the Genkit flow
-            const historyForApi: HistoryItem[] = messages.map(msg => ({
+            const historyForApi: HistoryItem[] = [...messages, userMessage].map(msg => ({
                 role: msg.role,
                 content: [{ text: msg.content }]
             }));
 
             const response = await chatWithKhelbot({
-                message: input,
-                history: historyForApi
+                message: textToSend,
+                history: historyForApi.slice(0, -1) // Pass history without the current message
             });
             const modelMessage: Message = { role: 'model', content: response };
             setMessages(prev => [...prev, modelMessage]);
@@ -79,6 +83,13 @@ export default function KhelbotWidget() {
         } finally {
             setLoading(false);
         }
+    };
+    
+    const handleMicClick = () => {
+        toast({
+            title: "Voice Input Coming Soon!",
+            description: "We're working on adding voice capabilities to KhelBot.",
+        });
     };
 
     return (
@@ -142,13 +153,13 @@ export default function KhelbotWidget() {
                         </ScrollArea>
                         <div className="p-4 border-t">
                              <div className="grid grid-cols-4 gap-2 mb-2">
-                                <Button variant="outline" size="sm" className="text-xs">Sell Help</Button>
-                                <Button variant="outline" size="sm" className="text-xs">Track Order</Button>
-                                <Button variant="outline" size="sm" className="text-xs">Payments</Button>
-                                <Button variant="outline" size="sm" className="text-xs">Report Issue</Button>
+                                <Button variant="outline" size="sm" className="text-xs" onClick={() => handleSend("Help me with selling")}>Sell Help</Button>
+                                <Button variant="outline" size="sm" className="text-xs" onClick={() => handleSend("How do I track my order?")}>Track Order</Button>
+                                <Button variant="outline" size="sm" className="text-xs" onClick={() => handleSend("Questions about payment")}>Payments</Button>
+                                <Button variant="outline" size="sm" className="text-xs" onClick={() => handleSend("I need to report an issue")}>Report Issue</Button>
                             </div>
                             <div className="flex items-center gap-2">
-                                <Button variant="outline" size="icon">
+                                <Button variant="outline" size="icon" onClick={handleMicClick}>
                                     <Mic className="h-5 w-5" />
                                 </Button>
                                 <Input
@@ -158,7 +169,7 @@ export default function KhelbotWidget() {
                                     placeholder="Ask a question..."
                                     disabled={loading}
                                 />
-                                <Button onClick={handleSend} disabled={loading || !input.trim()}>
+                                <Button onClick={() => handleSend()} disabled={loading || !input.trim()}>
                                     <Send className="h-5 w-5" />
                                 </Button>
                             </div>
@@ -166,7 +177,7 @@ export default function KhelbotWidget() {
                     </CardContent>
                 </Card>
 
-                <div className={cn("transition-opacity duration-300", isOpen ? "opacity-0 pointer-events-none" : "opacity-100")}>
+                 <div className={cn("transition-opacity duration-300", isOpen ? "opacity-0 pointer-events-none" : "opacity-100")}>
                     <Tooltip>
                         <TooltipTrigger asChild>
                             <Button

@@ -106,8 +106,8 @@ export default function KhelbotWidget() {
                         <div className="glass-overlay"></div>
                         <div className="glass-specular"></div>
                         <div className="glass-content h-full">
-                            <Card className="w-full h-full bg-transparent border-0 shadow-none flex flex-col">
-                                <CardHeader className="flex flex-row items-center justify-between p-4 border-b border-white/20">
+                           <Card className="w-full h-full bg-transparent border-0 shadow-none flex flex-col p-0">
+                                <CardHeader className="flex flex-row items-center justify-between p-4 border-b border-white/20 bg-black/10">
                                     <div className="flex items-center gap-3">
                                         <KhelwapasLogo className="w-10 h-10" />
                                         <div>
@@ -128,21 +128,21 @@ export default function KhelbotWidget() {
                                                     message.role === 'user' ? "justify-end" : "justify-start"
                                                 )}>
                                                     {message.role === 'model' && (
-                                                        <Avatar className="w-8 h-8">
-                                                            <AvatarFallback className="bg-white/80 text-primary">K</AvatarFallback>
+                                                        <Avatar className="w-8 h-8 flex-shrink-0">
+                                                            <AvatarFallback className="bg-primary text-primary-foreground">K</AvatarFallback>
                                                         </Avatar>
                                                     )}
                                                     <div className={cn(
                                                         "rounded-lg px-4 py-2 max-w-[80%] whitespace-pre-wrap shadow",
                                                         message.role === 'user'
                                                             ? "bg-primary text-primary-foreground"
-                                                            : "bg-white/90 text-gray-800"
+                                                            : "bg-background text-foreground"
                                                     )}>
                                                         {message.content}
                                                     </div>
                                                     {message.role === 'user' && (
-                                                        <Avatar className="w-8 h-8">
-                                                            <AvatarFallback className="bg-white/80 text-primary">U</AvatarFallback>
+                                                        <Avatar className="w-8 h-8 flex-shrink-0">
+                                                            <AvatarFallback className="bg-secondary text-secondary-foreground">U</AvatarFallback>
                                                         </Avatar>
                                                     )}
                                                 </div>
@@ -150,9 +150,9 @@ export default function KhelbotWidget() {
                                             {loading && (
                                                 <div className="flex gap-3 items-end justify-start">
                                                     <Avatar className="w-8 h-8">
-                                                        <AvatarFallback className="bg-white/80 text-primary">K</AvatarFallback>
+                                                        <AvatarFallback className="bg-primary text-primary-foreground">K</AvatarFallback>
                                                     </Avatar>
-                                                    <div className="rounded-lg px-4 py-2 bg-white/90">
+                                                    <div className="rounded-lg px-4 py-2 bg-background">
                                                         <Loader2 className="h-5 w-5 animate-spin text-muted-foreground"/>
                                                     </div>
                                                 </div>
@@ -161,13 +161,13 @@ export default function KhelbotWidget() {
                                     </ScrollArea>
                                     <div className="p-4 border-t border-white/20">
                                         <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 mb-2">
-                                            <Button variant="outline" size="sm" className="text-xs bg-white/20 border-white/30 text-white hover:bg-white/30" onClick={() => handleSend("Help me with selling")}>Sell Help</Button>
-                                            <Button variant="outline" size="sm" className="text-xs bg-white/20 border-white/30 text-white hover:bg-white/30" onClick={() => handleSend("How do I track my order?")}>Track Order</Button>
-                                            <Button variant="outline" size="sm" className="text-xs bg-white/20 border-white/30 text-white hover:bg-white/30" onClick={() => handleSend("Questions about payment")}>Payments</Button>
-                                            <Button variant="outline" size="sm" className="text-xs bg-white/20 border-white/30 text-white hover:bg-white/30" onClick={() => handleSend("I need to report an issue")}>Report Issue</Button>
+                                            <Button variant="secondary" size="sm" className="text-xs" onClick={() => handleSend("Help me with selling")}>Sell Help</Button>
+                                            <Button variant="secondary" size="sm" className="text-xs" onClick={() => handleSend("How do I track my order?")}>Track Order</Button>
+                                            <Button variant="secondary" size="sm" className="text-xs" onClick={() => handleSend("Questions about payment")}>Payments</Button>
+                                            <Button variant="secondary" size="sm" className="text-xs" onClick={() => handleSend("I need to report an issue")}>Report Issue</Button>
                                         </div>
                                         <div className="flex items-center gap-2">
-                                            <Button variant="outline" size="icon" onClick={handleMicClick} className="bg-white/20 border-white/30 text-white hover:bg-white/30">
+                                            <Button variant="secondary" size="icon" onClick={handleMicClick}>
                                                 <Mic className="h-5 w-5" />
                                             </Button>
                                             <Input
@@ -176,7 +176,7 @@ export default function KhelbotWidget() {
                                                 onKeyDown={(e) => e.key === 'Enter' && handleSend()}
                                                 placeholder="Ask a question..."
                                                 disabled={loading}
-                                                className="bg-white/80 text-black placeholder:text-gray-500 ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                                                className="bg-background text-foreground placeholder:text-muted-foreground"
                                             />
                                             <Button onClick={() => handleSend()} disabled={loading || !input.trim()}>
                                                 <Send className="h-5 w-5" />
@@ -211,3 +211,4 @@ export default function KhelbotWidget() {
     );
 
     
+}

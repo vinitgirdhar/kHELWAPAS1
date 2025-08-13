@@ -1,7 +1,11 @@
+
+'use client';
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { Carousel, CarouselApi, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Badge } from "../ui/badge";
+import { useEffect, useRef, useState } from "react";
 
 const testimonials = [
   {
@@ -24,10 +28,59 @@ const testimonials = [
     avatar: "https://images.unsplash.com/photo-1557683316-973673baf926?q=80&w=100&h=100&fit=crop",
     dataAiHint: "man playing badminton",
     testimonial: "Found a high-end racket that I could never afford new. The 'Refurbished' tag was accurate, and it plays like a dream. This is the future of sports shopping."
+  },
+   {
+    name: "Aisha Khan",
+    role: "Hockey Player",
+    avatar: "https://images.unsplash.com/photo-1541252260730-0472e8e01a7e?q=80&w=100&h=100&fit=crop",
+    dataAiHint: "woman playing hockey",
+    testimonial: "The process was seamless. Listed my old hockey stick, it got picked up the next day, and the payment was instant. Highly recommend for any athlete."
+  },
+  {
+    name: "Vikram Mehta",
+    role: "Runner",
+    avatar: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=100&h=100&fit=crop",
+    dataAiHint: "running shoes",
+    testimonial: "Got a great deal on a pair of lightly used premium running shoes. The condition was exactly as described. Khelwapas is my new go-to for gear."
+  },
+  {
+    name: "Sunita Reddy",
+    role: "Basketball Parent",
+    avatar: "https://images.unsplash.com/photo-1519861531473-9200262188bf?q=80&w=100&h=100&fit=crop",
+    dataAiHint: "basketball",
+    testimonial: "My daughter needed new basketball shoes. Found a great pair here for half the price of new ones. The 'Inspected' badge gave me peace of mind."
   }
 ];
 
 export default function Testimonials() {
+  const [api, setApi] = useState<CarouselApi>();
+  const scrollInterval = useRef<NodeJS.Timeout | null>(null);
+
+  const startScrolling = (direction: 'next' | 'prev') => {
+    if (scrollInterval.current) clearInterval(scrollInterval.current);
+    scrollInterval.current = setInterval(() => {
+      if (direction === 'next') {
+        api?.scrollNext();
+      } else {
+        api?.scrollPrev();
+      }
+    }, 2000); // scrolls every 2 seconds
+  };
+
+  const stopScrolling = () => {
+    if (scrollInterval.current) {
+      clearInterval(scrollInterval.current);
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      if (scrollInterval.current) {
+        clearInterval(scrollInterval.current);
+      }
+    };
+  }, []);
+
   return (
     <section className="py-20 bg-background">
       <div className="container">
@@ -38,13 +91,15 @@ export default function Testimonials() {
           </p>
         </div>
         <div className="flex items-center justify-center gap-4 mb-12 flex-wrap">
-            <Badge variant="outline" className="text-lg py-2 px-4 border-support bg-support/10 text-support-foreground border-green-500 bg-green-50 text-green-700">1000+ Items Sold</Badge>
+            <Badge variant="outline" className="text-lg py-2 px-4 border-support bg-support/10 text-green-700 border-green-500">1000+ Items Sold</Badge>
             <Badge variant="outline" className="text-lg py-2 px-4 border-primary bg-primary/10 text-primary">Verified Sellers</Badge>
             <Badge variant="outline" className="text-lg py-2 px-4 border-accent bg-accent/10 text-accent">Quality Inspected</Badge>
         </div>
         <Carousel
+          setApi={setApi}
           opts={{
             align: "start",
+            loop: true,
           }}
           className="w-full max-w-4xl mx-auto"
         >
@@ -69,8 +124,12 @@ export default function Testimonials() {
               </CarouselItem>
             ))}
           </CarouselContent>
-          <CarouselPrevious />
-          <CarouselNext />
+          <div onMouseEnter={() => startScrolling('prev')} onMouseLeave={stopScrolling}>
+            <CarouselPrevious />
+          </div>
+          <div onMouseEnter={() => startScrolling('next')} onMouseLeave={stopScrolling}>
+            <CarouselNext />
+          </div>
         </Carousel>
       </div>
     </section>

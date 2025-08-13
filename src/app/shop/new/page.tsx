@@ -25,10 +25,16 @@ import { Separator } from '@/components/ui/separator';
 export default function NewGearPage() {
   const [loading, setLoading] = useState(true);
   const [products, setProducts] = useState<Product[]>([]);
-  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+  const [sortedAndFilteredProducts, setSortedAndFilteredProducts] = useState<Product[]>([]);
+  
+  // Filter states
   const [categories, setCategories] = useState<string[]>([]);
   const [priceRange, setPriceRange] = useState([0, 20000]);
   const [brands, setBrands] = useState<string[]>([]);
+
+  // Sorting state
+  const [sortBy, setSortBy] = useState('newest');
+  
   const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
 
   const allCategories = Array.from(new Set(allProducts.filter(p => p.type === 'new').map(p => p.category)));
@@ -38,7 +44,6 @@ export default function NewGearPage() {
     const timer = setTimeout(() => {
       const newGear = allProducts.filter((p) => p.type === 'new');
       setProducts(newGear);
-      setFilteredProducts(newGear);
       setLoading(false);
     }, 500);
 
@@ -46,24 +51,39 @@ export default function NewGearPage() {
   }, []);
   
   useEffect(() => {
-    let newItems = products;
+    let filteredItems = products;
 
     if (categories.length > 0) {
-      newItems = newItems.filter(p => categories.includes(p.category));
+      filteredItems = filteredItems.filter(p => categories.includes(p.category));
     }
 
     if (brands.length > 0) {
-      newItems = newItems.filter(p => {
+      filteredItems = filteredItems.filter(p => {
         if(p.badge === 'Bestseller' && brands.includes('Premium Brands')) return true;
         if(p.badge !== 'Bestseller' && brands.includes('Local Makers')) return true;
         return false;
       })
     }
 
-    newItems = newItems.filter(p => p.price >= priceRange[0] && p.price <= priceRange[1]);
+    filteredItems = filteredItems.filter(p => p.price >= priceRange[0] && p.price <= priceRange[1]);
 
-    setFilteredProducts(newItems);
-  }, [categories, brands, priceRange, products]);
+    let sortedItems = [...filteredItems];
+    switch (sortBy) {
+        case 'price-asc':
+            sortedItems.sort((a, b) => a.price - b.price);
+            break;
+        case 'price-desc':
+            sortedItems.sort((a, b) => b.price - a.price);
+            break;
+        case 'newest':
+            // The default order is assumed to be 'newest', so no extra sorting is needed.
+            // We just restore the order from the filtered list.
+            break;
+    }
+
+    setSortedAndFilteredProducts(sortedItems);
+
+  }, [categories, brands, priceRange, products, sortBy]);
 
 
   const handleCategoryChange = (category: string) => {
@@ -88,75 +108,75 @@ export default function NewGearPage() {
     setPriceRange([0, 20000]);
   }
   
-  const activeFilters = [...categories, ...brands];
+  const activeFiltersCount = categories.length + brands.length + (priceRange[0] > 0 || priceRange[1] < 20000 ? 1 : 0);
 
   const FilterPanelContent = () => (
-    <div className="flex flex-col gap-6 p-6 bg-card rounded-lg border h-full">
-        <div className="flex justify-between items-center">
-            <h3 className="font-headline text-xl font-semibold">Filters</h3>
-            <Button variant="ghost" size="sm" onClick={clearFilters}>Clear All</Button>
+    <div className="flex flex-col h-full">
+        <SheetHeader className="p-6 border-b">
+            <SheetTitle className="font-headline text-xl font-semibold">Filters</SheetTitle>
+        </SheetHeader>
+        <div className="flex-grow p-6 overflow-y-auto">
+            <Accordion type="multiple" defaultValue={['category', 'brand', 'price']} className="w-full">
+                <AccordionItem value="category">
+                <AccordionTrigger className="font-semibold">Category</AccordionTrigger>
+                <AccordionContent>
+                    <div className="space-y-2">
+                    {allCategories.map(category => (
+                        <div key={category} className="flex items-center space-x-2">
+                        <Checkbox 
+                            id={`cat-${category}`} 
+                            checked={categories.includes(category)}
+                            onCheckedChange={() => handleCategoryChange(category)}
+                            />
+                        <Label htmlFor={`cat-${category}`}>{category}</Label>
+                        </div>
+                    ))}
+                    </div>
+                </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem value="brand">
+                <AccordionTrigger className="font-semibold">Brand Origin</AccordionTrigger>
+                <AccordionContent>
+                    <div className="space-y-2">
+                    {allBrands.map(brand => (
+                        <div key={brand} className="flex items-center space-x-2">
+                        <Checkbox 
+                            id={`brand-${brand}`} 
+                            checked={brands.includes(brand)}
+                            onCheckedChange={() => handleBrandChange(brand)}
+                            />
+                        <Label htmlFor={`brand-${brand}`}>{brand}</Label>
+                        </div>
+                    ))}
+                    </div>
+                </AccordionContent>
+                </AccordionItem>
+                
+                <AccordionItem value="price">
+                <AccordionTrigger className="font-semibold">Price Range</AccordionTrigger>
+                <AccordionContent>
+                    <div className="py-4">
+                    <Slider
+                        min={0}
+                        max={20000}
+                        step={500}
+                        value={priceRange}
+                        onValueChange={setPriceRange}
+                    />
+                    <div className="flex justify-between text-sm text-muted-foreground mt-2">
+                        <span>₹{priceRange[0].toLocaleString('en-IN')}</span>
+                        <span>₹{priceRange[1].toLocaleString('en-IN')}</span>
+                    </div>
+                    </div>
+                </AccordionContent>
+                </AccordionItem>
+            </Accordion>
         </div>
 
-        <Accordion type="multiple" defaultValue={['category', 'brand', 'price']} className="w-full">
-            <AccordionItem value="category">
-            <AccordionTrigger className="font-semibold">Category</AccordionTrigger>
-            <AccordionContent>
-                <div className="space-y-2">
-                {allCategories.map(category => (
-                    <div key={category} className="flex items-center space-x-2">
-                    <Checkbox 
-                        id={`cat-${category}`} 
-                        checked={categories.includes(category)}
-                        onCheckedChange={() => handleCategoryChange(category)}
-                        />
-                    <Label htmlFor={`cat-${category}`}>{category}</Label>
-                    </div>
-                ))}
-                </div>
-            </AccordionContent>
-            </AccordionItem>
-
-            <AccordionItem value="brand">
-            <AccordionTrigger className="font-semibold">Brand Origin</AccordionTrigger>
-            <AccordionContent>
-                <div className="space-y-2">
-                {allBrands.map(brand => (
-                    <div key={brand} className="flex items-center space-x-2">
-                    <Checkbox 
-                        id={`brand-${brand}`} 
-                        checked={brands.includes(brand)}
-                        onCheckedChange={() => handleBrandChange(brand)}
-                        />
-                    <Label htmlFor={`brand-${brand}`}>{brand}</Label>
-                    </div>
-                ))}
-                </div>
-            </AccordionContent>
-            </AccordionItem>
-            
-            <AccordionItem value="price">
-            <AccordionTrigger className="font-semibold">Price Range</AccordionTrigger>
-            <AccordionContent>
-                <div className="py-4">
-                <Slider
-                    min={0}
-                    max={20000}
-                    step={500}
-                    value={priceRange}
-                    onValueChange={setPriceRange}
-                />
-                <div className="flex justify-between text-sm text-muted-foreground mt-2">
-                    <span>₹{priceRange[0].toLocaleString('en-IN')}</span>
-                    <span>₹{priceRange[1].toLocaleString('en-IN')}</span>
-                </div>
-                </div>
-            </AccordionContent>
-            </AccordionItem>
-        </Accordion>
-
-        <div className="mt-auto">
-            <Separator className="mb-4" />
-            <Button className="w-full" onClick={() => setIsFilterSheetOpen(false)}>Apply Filters</Button>
+        <div className="p-6 border-t mt-auto grid grid-cols-2 gap-4">
+             <Button variant="ghost" onClick={clearFilters}>Clear All</Button>
+             <Button onClick={() => setIsFilterSheetOpen(false)}>Apply</Button>
         </div>
     </div>
   );
@@ -181,15 +201,16 @@ export default function NewGearPage() {
                     <Button variant="outline">
                         <Filter className="mr-2 h-4 w-4" />
                         Filters
+                         {activeFiltersCount > 0 && <Badge variant="secondary" className="ml-2">{activeFiltersCount}</Badge>}
                     </Button>
                 </SheetTrigger>
-                <SheetContent side="left" className="p-0">
+                <SheetContent side="left" className="p-0 w-full max-w-sm">
                    <FilterPanelContent />
                 </SheetContent>
             </Sheet>
 
-            {activeFilters.length > 0 && (
-                <div className="flex items-center gap-2 flex-wrap">
+            {activeFiltersCount > 0 && (
+                <div className="hidden lg:flex items-center gap-2 flex-wrap">
                     {categories.map(cat => (
                          <Badge key={cat} variant="secondary" className="gap-1 pr-1">
                             {cat}
@@ -206,20 +227,29 @@ export default function NewGearPage() {
                             </button>
                         </Badge>
                     ))}
+                     {(priceRange[0] > 0 || priceRange[1] < 20000) && (
+                         <Badge variant="secondary" className="gap-1 pr-1">
+                            Price
+                            <button onClick={() => setPriceRange([0, 20000])} className="h-4 w-4 rounded-full bg-background text-muted-foreground hover:bg-destructive hover:text-destructive-foreground flex items-center justify-center">
+                                <X className="h-3 w-3" />
+                            </button>
+                        </Badge>
+                    )}
+                     <Button variant="ghost" size="sm" onClick={clearFilters} className="text-sm">Clear All</Button>
                 </div>
             )}
         </div>
-        <div className="flex items-center gap-2 w-full sm:w-auto self-end">
+        <div className="flex items-center gap-2 w-full sm:w-auto">
             <span className="text-sm font-medium text-muted-foreground shrink-0">Sort by:</span>
-            <Select defaultValue="newest">
-            <SelectTrigger className="w-full sm:w-[180px]">
-                <SelectValue placeholder="Sort by" />
-            </SelectTrigger>
-            <SelectContent>
-                <SelectItem value="newest">Newest First</SelectItem>
-                <SelectItem value="price-asc">Price: Low to High</SelectItem>
-                <SelectItem value="price-desc">Price: High to Low</SelectItem>
-            </SelectContent>
+            <Select value={sortBy} onValueChange={setSortBy}>
+                <SelectTrigger className="w-full sm:w-[180px]">
+                    <SelectValue placeholder="Sort by" />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="newest">Newest First</SelectItem>
+                    <SelectItem value="price-asc">Price: Low to High</SelectItem>
+                    <SelectItem value="price-desc">Price: High to Low</SelectItem>
+                </SelectContent>
             </Select>
         </div>
       </div>
@@ -235,11 +265,11 @@ export default function NewGearPage() {
                     <Skeleton className="h-6 w-1/4" />
                   </div>
                 ))
-              : filteredProducts.map((product) => (
+              : sortedAndFilteredProducts.map((product) => (
                   <ProductCard key={product.id} product={product} />
                 ))}
           </div>
-          {filteredProducts.length === 0 && !loading && (
+          {sortedAndFilteredProducts.length === 0 && !loading && (
             <div className="text-center py-20 col-span-full">
               <h3 className="font-headline text-2xl">No Products Found</h3>
               <p className="text-muted-foreground">Try adjusting your filters.</p>

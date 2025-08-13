@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -11,7 +12,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { allProducts } from '@/lib/products';
-import { Funnel, X } from 'lucide-react';
+import { Filter, X } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
@@ -178,7 +179,7 @@ export default function NewGearPage() {
             <Sheet open={isFilterSheetOpen} onOpenChange={setIsFilterSheetOpen}>
                 <SheetTrigger asChild>
                     <Button variant="outline">
-                        <Funnel className="mr-2 h-4 w-4" />
+                        <Filter className="mr-2 h-4 w-4" />
                         Filters
                     </Button>
                 </SheetTrigger>

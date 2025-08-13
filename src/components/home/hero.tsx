@@ -7,7 +7,7 @@ export default function Hero() {
   return (
     <section
       className="relative bg-cover bg-center md:bg-fixed min-h-screen flex items-center justify-center"
-      style={{ backgroundImage: "url('/images/background.jpg')" }}
+      style={{ backgroundImage: "url('/images/products/background.jpg')" }}
     >
       <div className="absolute inset-0 bg-black/40" />
       <div className="relative container flex flex-col items-center justify-center text-center text-white p-4">

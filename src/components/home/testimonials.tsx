@@ -32,8 +32,8 @@ export default function Testimonials() {
     <section className="py-20 bg-background">
       <div className="container">
         <div className="text-center mb-12">
-          <h2 className="font-headline text-3xl md:text-4xl font-bold tracking-tight">Trusted by Athletes & Parents</h2>
-          <p className="text-lg text-muted-foreground mt-2 max-w-2xl mx-auto">
+          <h2 className="font-headline text-3xl md:text-4xl font-bold tracking-tight text-foreground">Trusted by Athletes & Parents</h2>
+          <p className="text-lg text-foreground/80 mt-2 max-w-2xl mx-auto">
             Hear from our community of buyers and sellers.
           </p>
         </div>

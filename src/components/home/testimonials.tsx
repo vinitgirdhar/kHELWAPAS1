@@ -124,12 +124,8 @@ export default function Testimonials() {
               </CarouselItem>
             ))}
           </CarouselContent>
-          <div onMouseEnter={() => startScrolling('prev')} onMouseLeave={stopScrolling}>
-            <CarouselPrevious />
-          </div>
-          <div onMouseEnter={() => startScrolling('next')} onMouseLeave={stopScrolling}>
-            <CarouselNext />
-          </div>
+          <CarouselPrevious onMouseEnter={() => startScrolling('prev')} onMouseLeave={stopScrolling}/>
+          <CarouselNext onMouseEnter={() => startScrolling('next')} onMouseLeave={stopScrolling}/>
         </Carousel>
       </div>
     </section>

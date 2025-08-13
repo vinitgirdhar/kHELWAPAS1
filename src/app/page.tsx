@@ -6,12 +6,23 @@ import Testimonials from '@/components/home/testimonials';
 
 export default function Home() {
   return (
-    <div className="flex flex-col">
-      <Hero />
-      <FeatureCards />
-      <FeaturedProducts />
-      <SeasonalBanner />
-      <Testimonials />
+    <div className="landing-page-background min-h-screen">
+      <div className="flex flex-col">
+        {/* Wrap sections with a div for glassmorphism effect if needed, or apply to individual components */}
+        <Hero />
+        <div className="glassmorphic-container">
+          <FeatureCards />
+        </div>
+        <div className="glassmorphic-container">
+          <FeaturedProducts />
+        </div>
+        <div className="glassmorphic-container">
+          <SeasonalBanner />
+        </div>
+        <div className="glassmorphic-container">
+          <Testimonials />
+        </div>
+      </div>
     </div>
   );
 }

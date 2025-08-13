@@ -51,7 +51,7 @@ export default function ProductCard({ product }: ProductCardProps) {
               alt={product.name}
               width={600}
               height={600}
-              className="aspect-square object-cover w-full transition-transform duration-300 group-hover:scale-105"
+              className="aspect-square object-cover w-full"
               data-ai-hint={product.dataAiHint}
             />
             {product.badge && (
@@ -59,12 +59,8 @@ export default function ProductCard({ product }: ProductCardProps) {
                   {product.badge}
                 </Badge>
             )}
-             <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-black/80 to-transparent" />
-             <div className="absolute bottom-4 left-4 right-4">
-                 <h3 className="font-headline text-lg font-semibold text-white truncate">{product.name}</h3>
-             </div>
           </div>
-          <div className="p-4 flex flex-col flex-grow">
+          <div className="p-4 flex flex-col flex-grow bg-card">
             <div className="flex justify-between items-center mb-2">
               <p className="text-sm text-muted-foreground">{product.category}</p>
               {product.type === 'preowned' && product.grade && (
@@ -74,13 +70,13 @@ export default function ProductCard({ product }: ProductCardProps) {
               )}
             </div>
             
-            <div className="flex-grow"></div>
+            <h3 className="font-headline font-semibold text-card-foreground flex-grow">{product.name}</h3>
 
-            <div className="flex justify-between items-center mt-auto">
+            <div className="flex justify-between items-center mt-4">
               <p className="text-2xl font-bold font-headline text-primary">₹{product.price.toLocaleString('en-IN')}</p>
-              <Button variant="ghost" size="sm" className="text-primary group-hover:translate-x-1 transition-transform">
-                View
-                <ArrowRight className="h-4 w-4 ml-1" />
+              <Button variant="outline" size="sm" className="group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                View Details
+                <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
               </Button>
             </div>
           </div>

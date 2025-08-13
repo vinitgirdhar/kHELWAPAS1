@@ -6,13 +6,11 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
   Menu,
-  Search,
   ShoppingCart,
   UserCircle,
   LogOut,
 } from "lucide-react";
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { KhelwapasLogo } from '@/components/icons/khelwapas-logo';
 import {
   Sheet,
@@ -29,6 +27,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { useCart } from '@/hooks/use-cart';
 import { Badge } from '../ui/badge';
+import SearchComponent from './search-component';
 
 const mainNav = [
   { href: '/shop/preowned', label: 'Shop Pre-Owned' },
@@ -92,10 +91,7 @@ export default function Header() {
         </nav>
         <div className="ml-auto flex items-center gap-2">
           <div className="hidden items-center gap-2 md:flex">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input placeholder="Search gear..." className="pl-9 w-48" />
-            </div>
+            <SearchComponent />
             <Button variant="ghost" size="icon" asChild>
               <Link href="/cart" className="relative">
                 <ShoppingCart className="h-5 w-5" />
@@ -167,10 +163,9 @@ export default function Header() {
                   ))}
                 </nav>
                 <div className="mt-auto border-t pt-4">
-                   <div className="relative mb-4">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input placeholder="Search gear..." className="pl-9" />
-                  </div>
+                   <div className="mb-4">
+                     <SearchComponent />
+                   </div>
                   <div className="flex items-center justify-around">
                      <Button variant="ghost" size="icon" className="h-10 w-10 relative" asChild>
                        <Link href="/cart">

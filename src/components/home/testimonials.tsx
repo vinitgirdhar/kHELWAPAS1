@@ -39,8 +39,8 @@ export default function Testimonials() {
         </div>
         <div className="flex items-center justify-center gap-4 mb-12 flex-wrap">
             <Badge variant="outline" className="text-lg py-2 px-4 border-support bg-support/10 text-support-foreground border-green-500 bg-green-50 text-green-700">1000+ Items Sold</Badge>
-            <Badge variant="outline" className="text-lg py-2 px-4 border-primary bg-primary/10 text-primary-foreground">Verified Sellers</Badge>
-            <Badge variant="outline" className="text-lg py-2 px-4 border-accent bg-accent/10 text-accent-foreground">Quality Inspected</Badge>
+            <Badge variant="outline" className="text-lg py-2 px-4 border-primary bg-primary/10 text-primary">Verified Sellers</Badge>
+            <Badge variant="outline" className="text-lg py-2 px-4 border-accent bg-accent/10 text-accent">Quality Inspected</Badge>
         </div>
         <Carousel
           opts={{

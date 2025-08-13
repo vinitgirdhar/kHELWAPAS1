@@ -25,6 +25,7 @@ export default function SearchComponent() {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const recognitionRef = useRef<any>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -64,6 +65,7 @@ export default function SearchComponent() {
       recognition.onresult = (event: any) => {
         const transcript = event.results[0][0].transcript;
         setSearchQuery(transcript);
+        inputRef.current?.focus();
       };
 
       recognitionRef.current = recognition;
@@ -89,6 +91,7 @@ export default function SearchComponent() {
 
   const handleClear = () => {
     setSearchQuery('');
+    inputRef.current?.focus();
   };
 
   return (
@@ -97,6 +100,7 @@ export default function SearchComponent() {
         <div className="relative w-full md:w-64">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
+            ref={inputRef}
             placeholder="Search gear..."
             className="pl-9 pr-16"
             value={searchQuery}

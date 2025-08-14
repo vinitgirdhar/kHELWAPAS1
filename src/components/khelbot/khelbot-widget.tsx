@@ -177,7 +177,7 @@ export default function KhelbotWidget() {
                                                 onKeyDown={(e) => e.key === 'Enter' && handleSend()}
                                                 placeholder="Ask a question..."
                                                 disabled={loading}
-                                                className="bg-background/80 border-border/50 text-foreground placeholder:text-muted-foreground"
+                                                className="bg-background border-border/50 text-foreground placeholder:text-muted-foreground"
                                             />
                                             <Button onClick={() => handleSend()} disabled={loading || !input.trim()}>
                                                 <Send className="h-5 w-5" />

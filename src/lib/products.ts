@@ -187,7 +187,7 @@ export const allProducts: Product[] = [
   },
   {
     id: '11',
-    name: 'Pro-Level Boxing Gloves',
+    name: 'Supreme Boxing Gloves',
     category: 'Boxing',
     type: 'new',
     price: 8000,

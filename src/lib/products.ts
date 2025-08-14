@@ -66,7 +66,7 @@ export const allProducts: Product[] = [
     category: 'Tennis',
     type: 'new',
     price: 9600,
-    image: 'https://images.unsplash.com/photo-1554062614-6da4fa67419f?q=80&w=800&h=800&fit=crop',
+    image: 'https://images.unsplash.com/photo-1557493680-99ae26025be8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHx0ZW5uaXMlMjByYWNrZXR8ZW58MHx8fHwxNzU1MTY3NzE2fDA&ixlib=rb-4.1.0&q=80&w=1080',
     dataAiHint: 'tennis racket',
     badge: 'Bestseller',
     description: 'A brand new racket designed for power and spin. Ideal for intermediate to advanced players looking to dominate the court.',

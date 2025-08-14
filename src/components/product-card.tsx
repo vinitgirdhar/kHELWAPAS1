@@ -4,6 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Star } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 export type Product = {
   id: string;
@@ -74,10 +75,15 @@ export default function ProductCard({ product }: ProductCardProps) {
 
             <div className="flex justify-between items-center mt-4">
               <p className="text-2xl font-bold font-headline text-primary">₹{product.price.toLocaleString('en-IN')}</p>
-              <Button variant="outline" size="sm" className="group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+              {/* This is a visual-only element to avoid nested interactive elements */}
+              <div className={cn(
+                  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors',
+                  'h-9 px-3', // Corresponds to size="sm"
+                  'border border-input bg-background group-hover:bg-primary group-hover:text-primary-foreground' // Corresponds to variant="outline" with hover effects
+              )}>
                 View Details
                 <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
-              </Button>
+              </div>
             </div>
           </div>
         </CardContent>

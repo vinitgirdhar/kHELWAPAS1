@@ -191,7 +191,7 @@ export const allProducts: Product[] = [
     category: 'Boxing',
     type: 'new',
     price: 8000,
-    image: 'https://images.unsplash.com/photo-1591117207234-37add9737965?q=80&w=800&h=800&fit=crop',
+    image: 'https://images.unsplash.com/photo-1669500635486-53b02ec7919b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxib3hpbmclMjBnbG92ZXN8ZW58MHx8fHwxNzU1MTY3ODQ5fDA&ixlib=rb-4.1.0&q=80&w=1080',
     dataAiHint: 'boxing gloves',
     badge: 'Bestseller',
     description: 'Premium leather boxing gloves designed for professional training and sparring. Multi-layered foam padding for maximum shock absorption.',

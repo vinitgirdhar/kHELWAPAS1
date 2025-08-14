@@ -10,6 +10,7 @@ import { KhelwapasLogo } from '../icons/khelwapas-logo';
 import { cn } from '@/lib/utils';
 import { chatWithKhelbot } from '@/ai/flows/khelbot-chat';
 import { ScrollArea } from '../ui/scroll-area';
+import type * as ScrollAreaPrimitive from "@radix-ui/react-scroll-area"
 import { Avatar, AvatarFallback } from '../ui/avatar';
 import {
   Tooltip,
@@ -35,7 +36,7 @@ export default function KhelbotWidget() {
     const [input, setInput] = useState('');
     const [messages, setMessages] = useState<Message[]>([]);
     const [loading, setLoading] = useState(false);
-    const scrollAreaRef = useRef<HTMLDivElement>(null);
+    const viewportRef = useRef<React.ElementRef<typeof ScrollAreaPrimitive.Viewport>>(null);
     const { toast } = useToast();
 
     useEffect(() => {
@@ -46,9 +47,9 @@ export default function KhelbotWidget() {
 
      useEffect(() => {
         // Auto-scroll to the bottom when new messages are added
-        if (scrollAreaRef.current) {
-            scrollAreaRef.current.scrollTo({
-                top: scrollAreaRef.current.scrollHeight,
+        if (viewportRef.current) {
+            viewportRef.current.scrollTo({
+                top: viewportRef.current.scrollHeight,
                 behavior: 'smooth'
             });
         }
@@ -120,7 +121,7 @@ export default function KhelbotWidget() {
                                     </Button>
                                 </CardHeader>
                                 <CardContent className="p-0 flex-1 flex flex-col">
-                                    <ScrollArea className="flex-1 p-4" ref={scrollAreaRef}>
+                                    <ScrollArea className="flex-1 p-4" viewportRef={viewportRef}>
                                         <div className="space-y-4">
                                             {messages.map((message, index) => (
                                                 <div key={index} className={cn(
@@ -176,7 +177,7 @@ export default function KhelbotWidget() {
                                                 onKeyDown={(e) => e.key === 'Enter' && handleSend()}
                                                 placeholder="Ask a question..."
                                                 disabled={loading}
-                                                className="bg-background text-foreground placeholder:text-muted-foreground"
+                                                className="bg-background/80 border-border/50 text-foreground placeholder:text-muted-foreground"
                                             />
                                             <Button onClick={() => handleSend()} disabled={loading || !input.trim()}>
                                                 <Send className="h-5 w-5" />

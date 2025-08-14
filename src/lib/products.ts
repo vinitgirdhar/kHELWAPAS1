@@ -83,7 +83,7 @@ export const allProducts: Product[] = [
     category: 'Cricket',
     type: 'new',
     price: 7920,
-    image: 'https://images.unsplash.com/photo-1622059332284-1b1236916642?q=80&w=800&h=800&fit=crop',
+    image: 'https://images.unsplash.com/photo-1578654979075-dde337ab7560?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyMHx8Y3JpY2tldCUyMGtpdHxlbnwwfHx8fDE3NTUxNjc2NTR8MA&ixlib=rb-4.1.0&q=80&w=1080',
     dataAiHint: 'cricket equipment',
     badge: 'Sale',
     description: 'Complete cricket kit for beginners. Includes a Kashmir Willow bat, pads, gloves, helmet, and a kit bag. Everything you need to start playing.',

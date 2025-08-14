@@ -31,7 +31,7 @@ export const allProducts: Product[] = [
     category: 'Football',
     type: 'new',
     price: 3600,
-    image: 'https://images.unsplash.com/photo-1551958214-2d5b80a5a088?q=80&w=800&h=800&fit=crop',
+    image: 'https://images.unsplash.com/photo-1486286701208-1d58e9338013?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHwlMjBGT09UQkFMTHxlbnwwfHx8fDE3NTUxNjc1ODJ8MA&ixlib=rb-4.1.0&q=80&w=1080',
     dataAiHint: 'football ball',
     badge: 'Bestseller',
     description: 'Brand new, FIFA-approved match ball. Thermally bonded seamless surface for a more predictable trajectory, better touch and lower water uptake.',

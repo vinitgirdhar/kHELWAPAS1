@@ -120,7 +120,7 @@ export default function KhelbotWidget() {
                                         <X className="h-5 w-5" />
                                     </Button>
                                 </CardHeader>
-                                <CardContent className="p-0 flex-1 flex flex-col">
+                                <CardContent className="p-0 flex-1 flex flex-col min-h-0">
                                     <ScrollArea className="flex-1 p-4" viewportRef={viewportRef}>
                                         <div className="space-y-4">
                                             {messages.map((message, index) => (

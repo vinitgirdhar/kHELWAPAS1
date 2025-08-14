@@ -20,6 +20,8 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { useCart } from '@/hooks/use-cart';
+import { userAddresses } from '@/lib/user-data';
+
 
 export default function ProductDetailPage() {
   const router = useRouter();
@@ -59,7 +61,12 @@ export default function ProductDetailPage() {
 
   const handleBuyNow = () => {
     addItem({ ...product, quantity });
-    router.push('/checkout');
+    // Simulate accelerated checkout by selecting the default address and skipping to payment
+    const defaultAddress = userAddresses.find(addr => addr.isDefault);
+    if(defaultAddress) {
+        sessionStorage.setItem('selectedAddress', JSON.stringify(defaultAddress));
+    }
+    router.push('/checkout/payment');
   };
 
   const suggestedProducts = allProducts.filter(

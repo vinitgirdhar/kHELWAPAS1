@@ -3,11 +3,18 @@
 
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, Pie, PieChart, Cell } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { DollarSign, Users, ShoppingCart, Package } from "lucide-react";
+import { DollarSign, Users, ShoppingCart, Package, Filter } from "lucide-react";
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 const revenueData = [
   { month: 'Jan', revenue: 120000 },
@@ -43,30 +50,51 @@ export default function AdminRevenuePage() {
     <div className="flex-1 space-y-8 p-4 sm:p-8 pt-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <h2 className="text-3xl font-bold tracking-tight">Revenue Analytics</h2>
-        <div className="flex flex-col sm:flex-row items-center gap-2">
-            <Select defaultValue="this_month">
-                <SelectTrigger className="w-full sm:w-[180px]">
-                    <SelectValue placeholder="Select period" />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectItem value="this_month">This Month</SelectItem>
-                    <SelectItem value="last_3_months">Last 3 Months</SelectItem>
-                    <SelectItem value="this_year">This Year</SelectItem>
-                </SelectContent>
-            </Select>
-            <Select defaultValue="all">
-                <SelectTrigger className="w-full sm:w-[180px]">
-                    <SelectValue placeholder="Select type" />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectItem value="all">All Product Types</SelectItem>
-                    <SelectItem value="preowned">Pre-Owned</SelectItem>
-                    <SelectItem value="new">New</SelectItem>
-                    <SelectItem value="refurbished">Refurbished</SelectItem>
-                </SelectContent>
-            </Select>
-            <Button>Apply Filters</Button>
-        </div>
+         <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <Button variant="outline">
+                    <Filter className="mr-2 h-4 w-4" />
+                    Filter
+                </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-[250px]">
+                <DropdownMenuLabel>Filter Revenue Data</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <div className="p-2 space-y-4">
+                    <div>
+                        <label className="text-sm font-medium">Period</label>
+                        <Select defaultValue="this_month">
+                            <SelectTrigger>
+                                <SelectValue placeholder="Select period" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="this_month">This Month</SelectItem>
+                                <SelectItem value="last_3_months">Last 3 Months</SelectItem>
+                                <SelectItem value="this_year">This Year</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+                     <div>
+                        <label className="text-sm font-medium">Product Type</label>
+                       <Select defaultValue="all">
+                            <SelectTrigger>
+                                <SelectValue placeholder="Select type" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">All Product Types</SelectItem>
+                                <SelectItem value="preowned">Pre-Owned</SelectItem>
+                                <SelectItem value="new">New</SelectItem>
+                                <SelectItem value="refurbished">Refurbished</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+                </div>
+                <DropdownMenuSeparator />
+                <div className="p-2">
+                     <Button className="w-full">Apply Filters</Button>
+                </div>
+            </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -187,5 +215,3 @@ export default function AdminRevenuePage() {
     </div>
   );
 }
-
-    

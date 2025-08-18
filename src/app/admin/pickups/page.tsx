@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Truck, Package, Calendar as CalendarIcon, User } from 'lucide-react';
-import { pickupExecutives, scheduledPickups as defaultPickups, PickupExecutive, ScheduledPickup } from '@/lib/user-data';
+import { pickupExecutives as allPickupExecutives, scheduledPickups as defaultPickups, PickupExecutive, ScheduledPickup } from '@/lib/user-data';
 import { sellRequests, SellRequest, updateSellRequestStatus } from '@/lib/sell-requests';
 import { useToast } from '@/hooks/use-toast';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -17,6 +17,7 @@ export default function PickupSchedulingPage() {
   const [date, setDate] = useState<Date | undefined>(new Date('2024-10-05'));
   const [allSellRequests, setAllSellRequests] = useState<SellRequest[]>(sellRequests);
   const [scheduledPickups, setScheduledPickups] = useState<ScheduledPickup[]>(defaultPickups);
+  const [availableExecutives, setAvailableExecutives] = useState<PickupExecutive[]>(() => allPickupExecutives.slice(0, 3));
   const { toast } = useToast();
 
   const handleAssign = (request: SellRequest, executive: PickupExecutive) => {
@@ -41,6 +42,23 @@ export default function PickupSchedulingPage() {
     // Update the sell request status to 'Scheduled'
     updateSellRequestStatus(request.id, 'Scheduled');
     setAllSellRequests([...sellRequests]);
+    
+    // Update the available executives list
+    setAvailableExecutives(prevExecutives => {
+        // Remove the assigned executive
+        const updatedList = prevExecutives.filter(e => e.id !== executive.id);
+        
+        // Find a new executive to add who is not already in the list
+        const nextExecutive = allPickupExecutives.find(
+            exec => ![...updatedList, executive].some(e => e.id === exec.id)
+        );
+
+        if (nextExecutive) {
+            updatedList.push(nextExecutive);
+        }
+
+        return updatedList;
+    });
 
     toast({
       title: 'Pickup Scheduled',
@@ -101,7 +119,7 @@ export default function PickupSchedulingPage() {
                                                             </p>
                                                         </div>
                                                         <div className="grid gap-2">
-                                                           {pickupExecutives.map(exec => (
+                                                           {availableExecutives.map(exec => (
                                                                <Button key={exec.id} variant="outline" size="sm" className="justify-start gap-2" onClick={() => handleAssign(req, exec)}>
                                                                     <Avatar className="h-6 w-6">
                                                                         <AvatarImage src={exec.avatar} alt={exec.name} />
@@ -130,7 +148,7 @@ export default function PickupSchedulingPage() {
                         <CardTitle>Available Executives</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                        {pickupExecutives.map((exec) => (
+                        {availableExecutives.map((exec) => (
                             <div key={exec.id} className="flex items-center gap-3">
                                 <Avatar>
                                     <AvatarImage src={exec.avatar} alt={exec.name} />

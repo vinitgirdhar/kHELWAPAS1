@@ -35,10 +35,20 @@ import {
   TabsList,
   TabsTrigger,
 } from '@/components/ui/tabs';
-import { allProducts, Product } from '@/lib/products';
+import { allProducts, deleteProduct, type Product } from '@/lib/products';
 import { Input } from '@/components/ui/input';
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 const statusConfig: Record<Product['status'], string> = {
   'In Stock': 'bg-green-100 text-green-800 border-green-200',
@@ -52,28 +62,31 @@ const typeConfig: Record<Product['type'], string> = {
 
 export default function AdminProductsPage() {
     const [searchTerm, setSearchTerm] = React.useState('');
-    const [filteredProducts, setFilteredProducts] = React.useState(allProducts);
+    const [products, setProducts] = React.useState(allProducts);
 
     const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
         const term = event.target.value.toLowerCase();
         setSearchTerm(term);
         if (term) {
-            setFilteredProducts(allProducts.filter(p => p.name.toLowerCase().includes(term) || p.sku.toLowerCase().includes(term)));
+            setProducts(allProducts.filter(p => p.name.toLowerCase().includes(term) || p.sku.toLowerCase().includes(term)));
         } else {
-            setFilteredProducts(allProducts);
+            setProducts(allProducts);
         }
+    };
+    
+    const handleDeleteProduct = (productId: string) => {
+        deleteProduct(productId);
+        setProducts(products.filter(p => p.id !== productId));
     };
 
     const getProductsForTab = (tab: string) => {
-        if (tab === 'all') return filteredProducts;
-        return filteredProducts.filter(p => p.type === tab);
+        if (tab === 'all') return products;
+        return products.filter(p => p.type === tab);
     };
 
   return (
     <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
-      <Tabs defaultValue="all" onValueChange={(value) => {
-          // This logic can be expanded if server-side filtering is added
-      }}>
+      <Tabs defaultValue="all">
         <div className="flex items-center">
           <TabsList>
             <TabsTrigger value="all">All</TabsTrigger>
@@ -102,13 +115,13 @@ export default function AdminProductsPage() {
           </div>
         </div>
         <TabsContent value="all">
-          <ProductTable products={getProductsForTab('all')} />
+          <ProductTable products={getProductsForTab('all')} onDelete={handleDeleteProduct} />
         </TabsContent>
         <TabsContent value="new">
-          <ProductTable products={getProductsForTab('new')} />
+          <ProductTable products={getProductsForTab('new')} onDelete={handleDeleteProduct} />
         </TabsContent>
         <TabsContent value="preowned">
-          <ProductTable products={getProductsForTab('preowned')} />
+          <ProductTable products={getProductsForTab('preowned')} onDelete={handleDeleteProduct} />
         </TabsContent>
       </Tabs>
     </main>
@@ -116,8 +129,10 @@ export default function AdminProductsPage() {
 }
 
 
-function ProductTable({ products }: { products: Product[] }) {
+function ProductTable({ products, onDelete }: { products: Product[], onDelete: (id: string) => void }) {
     const { toast } = useToast();
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false);
+    const [productToDelete, setProductToDelete] = React.useState<Product | null>(null);
 
     const handleAction = (action: string, productName: string) => {
         toast({
@@ -125,8 +140,22 @@ function ProductTable({ products }: { products: Product[] }) {
             description: `${productName} has been ${action.toLowerCase()}ed.`,
         });
     };
+    
+    const confirmDelete = () => {
+        if (productToDelete) {
+            onDelete(productToDelete.id);
+            toast({
+                variant: 'destructive',
+                title: 'Product Deleted',
+                description: `${productToDelete.name} has been deleted.`,
+            });
+            setProductToDelete(null);
+        }
+        setIsDeleteDialogOpen(false);
+    };
 
     return (
+        <>
         <Card>
           <CardHeader>
             <CardTitle>Products</CardTitle>
@@ -203,7 +232,13 @@ function ProductTable({ products }: { products: Product[] }) {
                             <Link href={`/admin/products/${product.id}`}>Edit</Link>
                           </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => handleAction('Paus', product.name)}>Pause Listing</DropdownMenuItem>
-                          <DropdownMenuItem className="text-destructive" onClick={() => handleAction('Delet', product.name)}>
+                          <DropdownMenuItem 
+                            className="text-destructive" 
+                            onClick={() => {
+                                setProductToDelete(product);
+                                setIsDeleteDialogOpen(true);
+                            }}
+                          >
                             Delete
                           </DropdownMenuItem>
                         </DropdownMenuContent>
@@ -220,5 +255,21 @@ function ProductTable({ products }: { products: Product[] }) {
             </div>
           </CardFooter>
         </Card>
+        <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+            <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                        This action cannot be undone. This will permanently delete the product
+                        "{productToDelete?.name}".
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                    <AlertDialogCancel onClick={() => setProductToDelete(null)}>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={confirmDelete}>Delete</AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
+     </>
     )
 }

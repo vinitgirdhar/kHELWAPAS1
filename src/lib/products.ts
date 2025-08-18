@@ -249,3 +249,8 @@ export const addProduct = (product: Omit<Product, 'id' | 'listingDate' | 'dataAi
   allProducts.unshift(newProduct); // Add to the beginning of the array
   return newProduct;
 };
+
+// In a real app, this would be a DELETE request to your backend.
+export const deleteProduct = (id: string) => {
+    allProducts = allProducts.filter(p => p.id !== id);
+};

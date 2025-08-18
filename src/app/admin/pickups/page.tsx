@@ -12,6 +12,7 @@ import { sellRequests, SellRequest, updateSellRequestStatus } from '@/lib/sell-r
 import { useToast } from '@/hooks/use-toast';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 export default function PickupSchedulingPage() {
   const [date, setDate] = useState<Date | undefined>(new Date('2024-10-05'));
@@ -76,12 +77,25 @@ export default function PickupSchedulingPage() {
   });
   
   const pendingPickupRequests = allSellRequests.filter(req => req.status === 'Approved');
+  
+  // Create a map of dates with scheduled pickups for the calendar
+  const pickupsByDate = scheduledPickups.reduce((acc, pickup) => {
+    const pickupDate = new Date(pickup.date).toDateString();
+    if (!acc[pickupDate]) {
+        acc[pickupDate] = [];
+    }
+    acc[pickupDate].push(pickup);
+    return acc;
+  }, {} as Record<string, ScheduledPickup[]>);
+
+  const scheduledDates = Object.keys(pickupsByDate).map(d => new Date(d));
 
   return (
     <div className="flex min-h-screen w-full flex-col">
       <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6 py-4">
          <h1 className="font-headline text-2xl font-bold">Pickup Scheduling</h1>
       </header>
+      <TooltipProvider>
       <main className="flex-1 p-4 sm:px-6">
         <div className="grid lg:grid-cols-3 gap-8 items-start">
             
@@ -170,6 +184,7 @@ export default function PickupSchedulingPage() {
                  <Card>
                     <CardHeader>
                         <CardTitle>Pickup Calendar</CardTitle>
+                        <CardDescription>Hover over a highlighted date for a quick summary.</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <Calendar
@@ -178,6 +193,36 @@ export default function PickupSchedulingPage() {
                             onSelect={setDate}
                             numberOfMonths={2}
                             className="p-0"
+                            modifiers={{ scheduled: scheduledDates }}
+                            modifiersClassNames={{ scheduled: "font-bold text-primary" }}
+                             components={{
+                                DayContent: ({ date }) => {
+                                const pickups = pickupsByDate[date.toDateString()];
+                                const hasPickups = pickups && pickups.length > 0;
+                                return (
+                                    <div className="relative">
+                                    {hasPickups ? (
+                                        <Tooltip>
+                                        <TooltipTrigger className="w-full h-full flex items-center justify-center">
+                                            <span className="relative">
+                                                {date.getDate()}
+                                                <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 h-1 w-1 rounded-full bg-primary" />
+                                            </span>
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                            <p className="font-semibold">{pickups.length} pickup{pickups.length > 1 ? 's' : ''} scheduled:</p>
+                                            <ul className="list-disc list-inside">
+                                            {pickups.map(p => <li key={p.orderId}>{p.executiveName}</li>)}
+                                            </ul>
+                                        </TooltipContent>
+                                        </Tooltip>
+                                    ) : (
+                                        date.getDate()
+                                    )}
+                                    </div>
+                                );
+                                },
+                            }}
                          />
                     </CardContent>
                 </Card>
@@ -213,6 +258,7 @@ export default function PickupSchedulingPage() {
             </div>
         </div>
       </main>
+      </TooltipProvider>
     </div>
   );
 }

@@ -5,7 +5,6 @@ import * as React from 'react';
 import {
   MoreHorizontal,
   Search,
-  ChevronDown,
   File,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
@@ -61,22 +60,19 @@ const pickupStatusConfig: Record<Order['pickupStatus'], string> = {
 
 export default function AdminOrdersPage() {
     const [searchTerm, setSearchTerm] = React.useState('');
-    const [orders, setOrders] = React.useState(allOrders);
 
-    const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const term = event.target.value.toLowerCase();
-        setSearchTerm(term);
-        const filtered = allOrders.filter(o => 
+    const filteredOrders = React.useMemo(() => {
+        if (!searchTerm) return allOrders;
+        const term = searchTerm.toLowerCase();
+        return allOrders.filter(o => 
             o.orderId.toLowerCase().includes(term) ||
             o.customer.name.toLowerCase().includes(term) ||
             o.product.name.toLowerCase().includes(term)
         );
-        setOrders(filtered);
-    };
+    }, [searchTerm]);
 
-    const getOrdersForTab = (tab: OrderStatus | 'all') => {
-        if (tab === 'all') return orders;
-        return orders.filter(o => o.orderStatus === tab);
+    const getOrdersForTab = (tab: OrderStatus) => {
+        return filteredOrders.filter(o => o.orderStatus === tab);
     }
 
   return (
@@ -98,7 +94,7 @@ export default function AdminOrdersPage() {
                 placeholder="Search orders..."
                 className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[320px]"
                 value={searchTerm}
-                onChange={handleSearch}
+                onChange={(e) => setSearchTerm(e.target.value)}
                 />
             </div>
             <Button variant="outline" size="sm" className="h-9 gap-1">
@@ -110,7 +106,7 @@ export default function AdminOrdersPage() {
           </div>
         </div>
         <TabsContent value="all">
-            <OrdersTable orders={getOrdersForTab('all')} />
+            <OrdersTable orders={filteredOrders} />
         </TabsContent>
         <TabsContent value="Pending">
             <OrdersTable orders={getOrdersForTab('Pending')} />

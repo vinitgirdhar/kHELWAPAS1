@@ -23,7 +23,10 @@ export const allProducts: Product[] = [
       "Material": "English Willow",
       "Weight": "1180g",
       "Size": "Full Size (SH)"
-    }
+    },
+    status: 'In Stock',
+    listingDate: '2024-07-15',
+    sku: 'KW-CR-001'
   },
   {
     id: '2',
@@ -40,7 +43,10 @@ export const allProducts: Product[] = [
       "Material": "Polyurethane",
       "Size": "5",
       "Use": "Match Play"
-    }
+    },
+    status: 'In Stock',
+    listingDate: '2024-07-20',
+    sku: 'KW-FB-002'
   },
   {
     id: '3',
@@ -58,7 +64,10 @@ export const allProducts: Product[] = [
       "Material": "Graphite",
       "Weight": "83g (4U)",
       "Grip Size": "G5"
-    }
+    },
+    status: 'In Stock',
+    listingDate: '2024-07-01',
+    sku: 'KW-BD-003'
   },
   {
     id: '4',
@@ -75,7 +84,10 @@ export const allProducts: Product[] = [
       "Head Size": "100 sq. in.",
       "String Pattern": "16x19",
       "Balance": "4 pts HL"
-    }
+    },
+    status: 'Out of Stock',
+    listingDate: '2024-06-10',
+    sku: 'KW-TN-004'
   },
   {
     id: '5',
@@ -92,7 +104,10 @@ export const allProducts: Product[] = [
       "Includes": "Bat, Pads, Gloves, Helmet, Bag",
       "Bat Material": "Kashmir Willow",
       "Size": "Full Size"
-    }
+    },
+    status: 'In Stock',
+    listingDate: '2024-07-22',
+    sku: 'KW-CR-005'
   },
   {
     id: '6',
@@ -111,7 +126,10 @@ export const allProducts: Product[] = [
       "Material": "Genuine Leather",
       "Size": "5",
       "Stitching": "Hand-stitched"
-    }
+    },
+    status: 'In Stock',
+    listingDate: '2024-05-18',
+    sku: 'KW-FB-006'
   },
   {
     id: '7',
@@ -129,7 +147,10 @@ export const allProducts: Product[] = [
       "Model": "Pegasus 39",
       "Size": "UK 9",
       "Use": "Road Running"
-    }
+    },
+    status: 'In Stock',
+    listingDate: '2024-07-11',
+    sku: 'KW-RN-007'
   },
    {
     id: '8',
@@ -147,7 +168,10 @@ export const allProducts: Product[] = [
       "Material": "Composite",
       "Flex": "85",
       "Curve": "P92"
-    }
+    },
+    status: 'In Stock',
+    listingDate: '2024-07-19',
+    sku: 'KW-HK-008'
   },
   {
     id: '9',
@@ -166,7 +190,10 @@ export const allProducts: Product[] = [
       "Material": "Composite Leather",
       "Size": "7",
       "Use": "Indoor/Outdoor"
-    }
+    },
+    status: 'In Stock',
+    listingDate: '2024-07-05',
+    sku: 'KW-BB-009'
   },
   {
     id: '10',
@@ -183,7 +210,10 @@ export const allProducts: Product[] = [
       "Material": "Natural Rubber & Jute",
       "Thickness": "5mm",
       "Dimensions": "72 x 24 inches"
-    }
+    },
+    status: 'In Stock',
+    listingDate: '2024-06-25',
+    sku: 'KW-YG-010'
   },
   {
     id: '11',
@@ -200,6 +230,9 @@ export const allProducts: Product[] = [
       "Material": "Genuine Leather",
       "Weight": "16 oz",
       "Closure": "Lace-up"
-    }
+    },
+    status: 'In Stock',
+    listingDate: '2024-07-25',
+    sku: 'KW-BX-011'
   }
 ];

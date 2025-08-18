@@ -20,6 +20,9 @@ export type Product = {
   description?: string;
   specs?: Record<string, string>;
   dataAiHint: string;
+  status: 'In Stock' | 'Out of Stock';
+  listingDate: string;
+  sku: string;
 };
 
 interface ProductCardProps {

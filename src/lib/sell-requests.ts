@@ -10,7 +10,7 @@ export type SellRequest = {
   contactMethod: 'Email' | 'Phone' | 'WhatsApp';
   contactDetail?: string;
   imageUrls: string[];
-  status: 'Pending' | 'Approved' | 'Rejected';
+  status: 'Pending' | 'Approved' | 'Rejected' | 'Scheduled';
 };
 
 // This is a mock database to store sell requests in memory.
@@ -84,7 +84,7 @@ export const addSellRequest = (request: Omit<SellRequest, 'id' | 'status' | 'ima
     return newRequest;
 }
 
-export const updateSellRequestStatus = (id: string, status: 'Approved' | 'Rejected') => {
+export const updateSellRequestStatus = (id: string, status: SellRequest['status']) => {
     const requestIndex = sellRequests.findIndex(req => req.id === id);
     if (requestIndex !== -1) {
         sellRequests[requestIndex].status = status;

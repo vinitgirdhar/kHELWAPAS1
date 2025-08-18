@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -216,7 +217,6 @@ function UserTable({ users, onAction }: { users: User[], onAction: (action: stri
                           <DropdownMenuLabel>Actions</DropdownMenuLabel>
                           <DropdownMenuItem onClick={() => onAction('View Details', user.name)}>View Details</DropdownMenuItem>
                           <DropdownMenuItem onClick={() => onAction('Edit User', user.name)}>Edit</DropdownMenuItem>
-                           <DropdownMenuItem onClick={() => onAction('Change Role', user.name)}>Change Role</DropdownMenuItem>
                           <DropdownMenuItem 
                             className="text-destructive" 
                             onClick={() => onAction('Block User', user.name)}

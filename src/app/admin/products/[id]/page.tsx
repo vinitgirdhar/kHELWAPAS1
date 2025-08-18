@@ -3,9 +3,7 @@
 
 import Link from 'next/link';
 import {
-  ArrowLeft,
   ChevronLeft,
-  PlusCircle,
   Upload,
   X,
 } from 'lucide-react';
@@ -30,14 +28,55 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import Image from 'next/image';
 import { useDropzone } from 'react-dropzone';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
+import { allProducts } from '@/lib/products';
 
-export default function AddProductPage() {
+export default function ProductFormPage() {
     const [files, setFiles] = useState<(File & { preview: string })[]>([]);
+    const [name, setName] = useState('');
+    const [description, setDescription] = useState('');
+    const [price, setPrice] = useState(0);
+    const [originalPrice, setOriginalPrice] = useState(0);
+    const [sku, setSku] = useState('');
+    const [stock, setStock] = useState(0);
+    const [status, setStatus] = useState('In Stock');
+    const [type, setType] = useState('new');
+    
     const { toast } = useToast();
     const router = useRouter();
+    const params = useParams();
+    const productId = typeof params.id === 'string' ? params.id : null;
+    const isEditing = productId !== 'new';
+
+    useEffect(() => {
+        if (isEditing) {
+            const product = allProducts.find(p => p.id === productId);
+            if (product) {
+                setName(product.name);
+                setDescription(product.description || '');
+                setPrice(product.price);
+                setOriginalPrice(product.originalPrice || 0);
+                setSku(product.sku);
+                setStock(parseInt(product.status === 'In Stock' ? '1' : '0', 10)); // Simplified
+                setStatus(product.status);
+                setType(product.type);
+                // In a real app, you'd fetch image files or handle them differently
+                // For this prototype, we'll just show the main image as a preview
+                if (product.image) {
+                     setFiles([{
+                        name: 'existing-image',
+                        preview: product.image,
+                        ...new File([], 'existing-image')
+                     }]);
+                }
+            } else {
+                 toast({ variant: 'destructive', title: 'Product not found' });
+                 router.push('/admin/products');
+            }
+        }
+    }, [isEditing, productId, router, toast]);
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
         accept: { 'image/*': [] },
@@ -51,7 +90,7 @@ export default function AddProductPage() {
             return;
         }
         setFiles(prevFiles => [
-            ...prevFiles,
+            ...prevFiles.filter(f => f.name !== 'existing-image'), // Remove placeholder
             ...acceptedFiles.map(file => Object.assign(file, {
                 preview: URL.createObjectURL(file)
             }))
@@ -59,14 +98,14 @@ export default function AddProductPage() {
         }
     });
 
-    const removeFile = (fileToRemove: File) => {
-        setFiles(files => files.filter(file => file !== fileToRemove));
+    const removeFile = (fileToRemove: File | (File & { preview: string })) => {
+        setFiles(files => files.filter(file => file.preview !== (fileToRemove as any).preview));
     };
 
     const handleSave = () => {
         toast({
-            title: 'Product Saved',
-            description: 'The new product has been added to the inventory.',
+            title: isEditing ? 'Product Updated' : 'Product Saved',
+            description: `The product "${name}" has been saved.`,
         });
         router.push('/admin/products');
     }
@@ -82,7 +121,7 @@ export default function AddProductPage() {
             </Link>
           </Button>
           <h1 className="flex-1 shrink-0 whitespace-nowrap text-xl font-semibold tracking-tight sm:grow-0">
-            New Product
+            {isEditing ? 'Edit Product' : 'New Product'}
           </h1>
           <div className="hidden items-center gap-2 md:ml-auto md:flex">
             <Button variant="outline" size="sm" onClick={() => router.push('/admin/products')}>
@@ -108,14 +147,16 @@ export default function AddProductPage() {
                       id="name"
                       type="text"
                       className="w-full"
-                      defaultValue="Kookaburra Cricket Bat"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
                     />
                   </div>
                   <div className="grid gap-3">
                     <Label htmlFor="description">Description</Label>
                     <Textarea
                       id="description"
-                      defaultValue="A top-tier English Willow cricket bat, perfect for professional players seeking power and precision."
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
                       className="min-h-32"
                     />
                   </div>
@@ -143,7 +184,7 @@ export default function AddProductPage() {
                     <div className="mt-4 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4">
                         {files.map((file, i) => (
                             <div key={i} className="relative aspect-square group">
-                                <Image src={file.preview} alt={`Preview ${i}`} fill className="object-cover rounded-md" onLoad={() => URL.revokeObjectURL(file.preview)} />
+                                <Image src={file.preview} alt={`Preview ${i}`} fill className="object-cover rounded-md" onLoad={() => {if(file.name !== 'existing-image') URL.revokeObjectURL(file.preview)}} />
                                 <Button type="button" variant="destructive" size="icon" className="absolute top-1 right-1 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => removeFile(file)}>
                                     <X className="h-4 w-4" />
                                 </Button>
@@ -163,11 +204,11 @@ export default function AddProductPage() {
                 <div className="grid gap-6">
                   <div className="grid gap-3">
                     <Label htmlFor="price">Price (₹)</Label>
-                    <Input id="price" type="number" defaultValue="15000" />
+                    <Input id="price" type="number" value={price} onChange={(e) => setPrice(Number(e.target.value))} />
                   </div>
                    <div className="grid gap-3">
                     <Label htmlFor="originalPrice">Original Price (₹)</Label>
-                    <Input id="originalPrice" type="number" defaultValue="22000" />
+                    <Input id="originalPrice" type="number" value={originalPrice} onChange={(e) => setOriginalPrice(Number(e.target.value))} />
                   </div>
                 </div>
               </CardContent>
@@ -180,15 +221,15 @@ export default function AddProductPage() {
                 <div className="grid gap-6">
                   <div className="grid gap-3">
                     <Label htmlFor="sku">SKU</Label>
-                    <Input id="sku" type="text" defaultValue="KW-CR-012" />
+                    <Input id="sku" type="text" value={sku} onChange={(e) => setSku(e.target.value)} />
                   </div>
                    <div className="grid gap-3">
                     <Label htmlFor="stock">Stock</Label>
-                    <Input id="stock" type="number" defaultValue="25" />
+                    <Input id="stock" type="number" value={stock} onChange={(e) => setStock(Number(e.target.value))} />
                   </div>
                    <div className="grid gap-3">
                      <Label htmlFor="status">Status</Label>
-                    <Select defaultValue="In Stock">
+                    <Select value={status} onValueChange={setStatus}>
                       <SelectTrigger id="status" aria-label="Select status">
                         <SelectValue placeholder="Select status" />
                       </SelectTrigger>
@@ -200,7 +241,7 @@ export default function AddProductPage() {
                   </div>
                    <div className="grid gap-3">
                      <Label htmlFor="type">Type</Label>
-                    <Select defaultValue="new">
+                    <Select value={type} onValueChange={setType}>
                       <SelectTrigger id="type" aria-label="Select type">
                         <SelectValue placeholder="Select type" />
                       </SelectTrigger>

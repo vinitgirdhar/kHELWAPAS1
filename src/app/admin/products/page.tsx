@@ -200,7 +200,7 @@ function ProductTable({ products }: { products: Product[] }) {
                         <DropdownMenuContent align="end">
                           <DropdownMenuLabel>Actions</DropdownMenuLabel>
                           <DropdownMenuItem asChild>
-                            <Link href="/admin/products/new">Edit</Link>
+                            <Link href={`/admin/products/${product.id}`}>Edit</Link>
                           </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => handleAction('Paus', product.name)}>Pause Listing</DropdownMenuItem>
                           <DropdownMenuItem className="text-destructive" onClick={() => handleAction('Delet', product.name)}>

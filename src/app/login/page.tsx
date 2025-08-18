@@ -20,6 +20,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { allUsers } from '@/lib/users';
 
 const loginSchema = z.object({
   email: z.string().email('Please enter a valid email address.'),
@@ -43,24 +44,37 @@ export default function LoginPage() {
 
   async function onSubmit(data: LoginFormValues) {
     setLoading(true);
-    // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1000));
     setLoading(false);
     
-    // In a real app, you'd verify credentials against a database
-    // For this simulation, we'll just assume success
-    
-    localStorage.setItem('isLoggedIn', 'true');
-    // Dispatch a storage event to notify other tabs/windows
-    window.dispatchEvent(new Event('storage'));
+    // Check if the user exists in our mock data
+    const user = allUsers.find(u => u.email === data.email);
 
-    toast({
-      title: 'Login Successful!',
-      description: "Welcome back!",
-    });
+    if (user) {
+        // For this prototype, we'll accept any password for a valid email
+        localStorage.setItem('isLoggedIn', 'true');
+        // Store the logged-in user's profile to be used on the profile page
+        localStorage.setItem('userProfile', JSON.stringify({
+            fullName: user.name,
+            email: user.email,
+            phone: user.phone,
+        }));
+        
+        window.dispatchEvent(new Event('storage'));
 
-    // Redirect user to the homepage
-    router.push('/');
+        toast({
+            title: 'Login Successful!',
+            description: `Welcome back, ${user.name}!`,
+        });
+
+        router.push('/');
+    } else {
+        toast({
+            variant: 'destructive',
+            title: 'Login Failed',
+            description: "No account found with that email address.",
+        });
+    }
   }
 
   return (

@@ -52,9 +52,9 @@ export default function AdminRevenuePage() {
         <h2 className="text-3xl font-bold tracking-tight">Revenue Analytics</h2>
          <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button variant="outline">
-                    <Filter className="mr-2 h-4 w-4" />
-                    Filter
+                <Button variant="outline" size="icon">
+                    <Filter className="h-4 w-4" />
+                     <span className="sr-only">Filter</span>
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-[250px]">

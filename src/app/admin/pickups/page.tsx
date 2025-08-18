@@ -7,24 +7,46 @@ import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Truck } from 'lucide-react';
-import { pickupExecutives, scheduledPickups, PickupExecutive, ScheduledPickup } from '@/lib/user-data';
+import { pickupExecutives, scheduledPickups as defaultPickups, PickupExecutive, ScheduledPickup } from '@/lib/user-data';
 import { useToast } from '@/hooks/use-toast';
 
 export default function PickupSchedulingPage() {
   const [date, setDate] = useState<Date | undefined>(new Date('2024-10-05'));
+  const [scheduledPickups, setScheduledPickups] = useState<ScheduledPickup[]>(defaultPickups);
   const { toast } = useToast();
 
   const handleAssign = (executive: PickupExecutive) => {
+    if (!date) {
+      toast({
+        variant: 'destructive',
+        title: 'No Date Selected',
+        description: 'Please select a date from the calendar to assign a pickup.',
+      });
+      return;
+    }
+
+    const newPickup: ScheduledPickup = {
+      orderId: `ORD-${Date.now().toString().slice(-5)}`,
+      executiveName: executive.name,
+      address: `Random Address, ${executive.location}`,
+      date: date.toISOString().split('T')[0], // Format as YYYY-MM-DD
+    };
+
+    setScheduledPickups(prevPickups => [...prevPickups, newPickup]);
+
     toast({
       title: 'Executive Assigned',
-      description: `${executive.name} has been assigned a new pickup.`,
+      description: `${executive.name} has been assigned a new pickup for ${date.toLocaleDateString()}.`,
     });
   };
 
   const filteredPickups = scheduledPickups.filter(p => {
     if (!date) return true;
     const pickupDate = new Date(p.date);
-    return pickupDate.toDateString() === date.toDateString();
+    // Adjust for timezone differences by comparing UTC dates
+    return pickupDate.getUTCFullYear() === date.getUTCFullYear() &&
+           pickupDate.getUTCMonth() === date.getUTCMonth() &&
+           pickupDate.getUTCDate() === date.getUTCDate();
   });
 
   return (

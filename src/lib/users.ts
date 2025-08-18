@@ -17,7 +17,7 @@ export type User = {
   rating: number; // Rating out of 5
 };
 
-export const allUsers: User[] = [
+export let allUsers: User[] = [
   {
     id: 'user-1',
     name: 'Rohan Sharma',
@@ -116,5 +116,12 @@ export const updateUserStatus = (id: string, status: User['status']) => {
      const userIndex = allUsers.findIndex(u => u.id === id);
     if (userIndex !== -1) {
         allUsers[userIndex].status = status;
+    }
+};
+
+export const updateUser = (id: string, data: Partial<Omit<User, 'id'>>) => {
+    const userIndex = allUsers.findIndex(u => u.id === id);
+    if (userIndex !== -1) {
+        allUsers[userIndex] = { ...allUsers[userIndex], ...data };
     }
 }

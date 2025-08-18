@@ -2,8 +2,7 @@
 'use client';
 
 import * as React from 'react';
-import Image from 'next/image';
-import { MoreHorizontal, PlusCircle, Search } from 'lucide-react';
+import { MoreHorizontal, Search, Star } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -35,10 +34,11 @@ import {
   TabsList,
   TabsTrigger,
 } from '@/components/ui/tabs';
-import { allUsers, type User } from '@/lib/users';
+import { allUsers, type User, updateUserStatus } from '@/lib/users';
 import { Input } from '@/components/ui/input';
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -49,8 +49,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Star } from 'lucide-react';
+
 
 const statusConfig: Record<User['status'], string> = {
   'Active': 'bg-green-100 text-green-800 border-green-200',
@@ -68,6 +67,10 @@ const roleConfig: Record<User['role'], string> = {
 export default function AdminUsersPage() {
     const [searchTerm, setSearchTerm] = React.useState('');
     const [users, setUsers] = React.useState(allUsers);
+    const [isAlertDialogOpen, setIsAlertDialogOpen] = React.useState(false);
+    const [userToAction, setUserToAction] = React.useState<User | null>(null);
+    const [actionType, setActionType] = React.useState<'Block' | 'Unblock' | null>(null);
+
     const { toast } = useToast();
 
     const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -80,12 +83,26 @@ export default function AdminUsersPage() {
         }
     };
     
-    const handleAction = (action: string, userName: string) => {
-         toast({
-            title: `Action: ${action}`,
-            description: `Action "${action}" performed on user ${userName}.`,
-        });
-    }
+    const handleOpenAlert = (user: User, type: 'Block' | 'Unblock') => {
+        setUserToAction(user);
+        setActionType(type);
+        setIsAlertDialogOpen(true);
+    };
+
+    const confirmAction = () => {
+        if (userToAction && actionType) {
+            const newStatus = actionType === 'Block' ? 'Blocked' : 'Active';
+            updateUserStatus(userToAction.id, newStatus);
+            setUsers([...allUsers]); // Refresh the user list
+            toast({
+                title: `User ${actionType}ed`,
+                description: `${userToAction.name} has been ${actionType.toLowerCase()}ed.`,
+            });
+        }
+        setIsAlertDialogOpen(false);
+        setUserToAction(null);
+        setActionType(null);
+    };
 
     const getUsersForTab = (tab: string) => {
         if (tab === 'all') return users;
@@ -93,6 +110,7 @@ export default function AdminUsersPage() {
     };
 
   return (
+    <>
     <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
       <Tabs defaultValue="all">
         <div className="flex items-center">
@@ -114,24 +132,42 @@ export default function AdminUsersPage() {
           </div>
         </div>
         <TabsContent value="all">
-          <UserTable users={getUsersForTab('all')} onAction={handleAction} />
+          <UserTable users={getUsersForTab('all')} onAction={handleOpenAlert} />
         </TabsContent>
          <TabsContent value="Buyer">
-          <UserTable users={getUsersForTab('buyer')} onAction={handleAction} />
+          <UserTable users={getUsersForTab('buyer')} onAction={handleOpenAlert} />
         </TabsContent>
          <TabsContent value="Seller">
-          <UserTable users={getUsersForTab('seller')} onAction={handleAction} />
+          <UserTable users={getUsersForTab('seller')} onAction={handleOpenAlert} />
         </TabsContent>
          <TabsContent value="Admin">
-          <UserTable users={getUsersForTab('admin')} onAction={handleAction} />
+          <UserTable users={getUsersForTab('admin')} onAction={handleOpenAlert} />
         </TabsContent>
       </Tabs>
     </main>
+     <AlertDialog open={isAlertDialogOpen} onOpenChange={setIsAlertDialogOpen}>
+        <AlertDialogContent>
+            <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                    This will {actionType?.toLowerCase()} the user "{userToAction?.name}".
+                    {actionType === 'Block' ? ' They will not be able to log in.' : ' They will regain access to their account.'}
+                </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+                <AlertDialogCancel onClick={() => setUserToAction(null)}>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={confirmAction}>
+                    {actionType}
+                </AlertDialogAction>
+            </AlertDialogFooter>
+        </AlertDialogContent>
+    </AlertDialog>
+    </>
   );
 }
 
 
-function UserTable({ users, onAction }: { users: User[], onAction: (action: string, userName: string) => void }) {
+function UserTable({ users, onAction }: { users: User[], onAction: (user: User, action: 'Block' | 'Unblock') => void }) {
     
     const renderRating = (rating: number) => {
         return (
@@ -215,14 +251,27 @@ function UserTable({ users, onAction }: { users: User[], onAction: (action: stri
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                          <DropdownMenuItem onClick={() => onAction('View Details', user.name)}>View Details</DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => onAction('Edit User', user.name)}>Edit</DropdownMenuItem>
-                          <DropdownMenuItem 
-                            className="text-destructive" 
-                            onClick={() => onAction('Block User', user.name)}
-                          >
-                            Block User
+                          <DropdownMenuItem asChild>
+                            <Link href={`/admin/users/${user.id}`}>View Details</Link>
                           </DropdownMenuItem>
+                          <DropdownMenuItem asChild>
+                            <Link href={`/admin/users/${user.id}/edit`}>Edit User</Link>
+                          </DropdownMenuItem>
+                          {user.status === 'Active' ? (
+                            <DropdownMenuItem 
+                                className="text-destructive" 
+                                onClick={() => onAction(user, 'Block')}
+                            >
+                                Block User
+                            </DropdownMenuItem>
+                          ) : (
+                             <DropdownMenuItem 
+                                className="text-green-600"
+                                onClick={() => onAction(user, 'Unblock')}
+                            >
+                                Unblock User
+                            </DropdownMenuItem>
+                          )}
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>

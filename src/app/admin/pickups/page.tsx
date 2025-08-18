@@ -15,7 +15,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 export default function PickupSchedulingPage() {
-  const [date, setDate] = useState<Date | undefined>(new Date('2024-10-05'));
+  const [date, setDate] = useState<Date | undefined>();
   const [allSellRequests, setAllSellRequests] = useState<SellRequest[]>(sellRequests);
   const [scheduledPickups, setScheduledPickups] = useState<ScheduledPickup[]>(defaultPickups);
   const [availableExecutives, setAvailableExecutives] = useState<PickupExecutive[]>(() => allPickupExecutives.slice(0, 3));

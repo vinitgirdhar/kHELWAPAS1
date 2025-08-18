@@ -38,6 +38,7 @@ import {
 import { allProducts, Product } from '@/lib/products';
 import { Input } from '@/components/ui/input';
 import Link from 'next/link';
+import { useToast } from '@/hooks/use-toast';
 
 const statusConfig: Record<Product['status'], string> = {
   'In Stock': 'bg-green-100 text-green-800 border-green-200',
@@ -116,6 +117,15 @@ export default function AdminProductsPage() {
 
 
 function ProductTable({ products }: { products: Product[] }) {
+    const { toast } = useToast();
+
+    const handleAction = (action: string, productName: string) => {
+        toast({
+            title: `Action: ${action}`,
+            description: `${productName} has been ${action.toLowerCase()}ed.`,
+        });
+    };
+
     return (
         <Card>
           <CardHeader>
@@ -189,9 +199,11 @@ function ProductTable({ products }: { products: Product[] }) {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                          <DropdownMenuItem>Edit</DropdownMenuItem>
-                          <DropdownMenuItem>Pause Listing</DropdownMenuItem>
-                          <DropdownMenuItem className="text-destructive">
+                          <DropdownMenuItem asChild>
+                            <Link href="/admin/products/new">Edit</Link>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleAction('Paus', product.name)}>Pause Listing</DropdownMenuItem>
+                          <DropdownMenuItem className="text-destructive" onClick={() => handleAction('Delet', product.name)}>
                             Delete
                           </DropdownMenuItem>
                         </DropdownMenuContent>

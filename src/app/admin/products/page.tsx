@@ -37,6 +37,7 @@ import {
 } from '@/components/ui/tabs';
 import { allProducts, Product } from '@/lib/products';
 import { Input } from '@/components/ui/input';
+import Link from 'next/link';
 
 const statusConfig: Record<Product['status'], string> = {
   'In Stock': 'bg-green-100 text-green-800 border-green-200',
@@ -89,11 +90,13 @@ export default function AdminProductsPage() {
             />
           </div>
           <div className="ml-auto flex items-center gap-2">
-            <Button size="sm" variant="outline" className="h-7 gap-1">
-              <PlusCircle className="h-3.5 w-3.5" />
-              <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                Add Product
-              </span>
+            <Button size="sm" variant="outline" className="h-7 gap-1" asChild>
+              <Link href="/admin/products/new">
+                <PlusCircle className="h-3.5 w-3.5" />
+                <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                  Add Product
+                </span>
+              </Link>
             </Button>
           </div>
         </div>

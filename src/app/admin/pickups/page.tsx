@@ -69,6 +69,7 @@ export default function PickupSchedulingPage() {
   const filteredPickups = scheduledPickups.filter(p => {
     if (!date) return true;
     const pickupDate = new Date(p.date);
+    // Compare year, month, and day in UTC to avoid timezone issues
     return pickupDate.getUTCFullYear() === date.getUTCFullYear() &&
            pickupDate.getUTCMonth() === date.getUTCMonth() &&
            pickupDate.getUTCDate() === date.getUTCDate();

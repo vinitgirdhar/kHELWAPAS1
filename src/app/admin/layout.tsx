@@ -1,6 +1,6 @@
 
 import Link from 'next/link';
-import { Home, Package, ShoppingCart, Users, BarChart, Bell } from 'lucide-react';
+import { Home, Package, ShoppingCart, Users, BarChart, Bell, Truck } from 'lucide-react';
 import { KhelwapasLogo } from '@/components/icons/khelwapas-logo';
 import { Button } from '@/components/ui/button';
 import {
@@ -50,6 +50,18 @@ export default function AdminLayout({
                 </Link>
               </TooltipTrigger>
               <TooltipContent side="right">Orders</TooltipContent>
+            </Tooltip>
+             <Tooltip>
+              <TooltipTrigger asChild>
+                <Link
+                  href="/admin/pickups"
+                  className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+                >
+                  <Truck className="h-5 w-5" />
+                  <span className="sr-only">Pickups</span>
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent side="right">Pickups</TooltipContent>
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>

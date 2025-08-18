@@ -1,4 +1,5 @@
 
+
 export type Order = {
   id: string;
   date: string;
@@ -39,4 +40,34 @@ export type PaymentMethod = {
 export const userPaymentMethods: PaymentMethod[] = [
     { id: 'pm-1', type: 'visa', last4: '4242', expiry: '12/26', cardHolder: 'Rohan Sharma' },
     { id: 'pm-2', type: 'mastercard', last4: '5555', expiry: '08/25', cardHolder: 'Rohan Sharma' },
+];
+
+export type PickupExecutive = {
+    id: string;
+    name: string;
+    location: string;
+    avatar: string;
+};
+
+export const pickupExecutives: PickupExecutive[] = [
+    { id: 'exec-1', name: 'Rajesh Kumar', location: 'Delhi', avatar: 'https://images.unsplash.com/photo-1599566150163-29194dcaad36?q=80&w=100&h=100&fit=crop' },
+    { id: 'exec-2', name: 'Priya Sharma', location: 'Mumbai', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=100&h=100&fit=crop' },
+    { id: 'exec-3', name: 'Arjun Singh', location: 'Bangalore', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=100&h=100&fit=crop' },
+    { id: 'exec-4', name: 'Deepa Krishnan', location: 'Chennai', avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=100&h=100&fit=crop' },
+    { id: 'exec-5', name: 'Vikram Mehta', location: 'Kolkata', avatar: 'https://images.unsplash.com/photo-1568602471122-7832951cc4c5?q=80&w=100&h=100&fit=crop' },
+];
+
+export type ScheduledPickup = {
+    orderId: string;
+    executiveName: string;
+    address: string;
+    date: string; // YYYY-MM-DD format
+};
+
+export const scheduledPickups: ScheduledPickup[] = [
+    { orderId: '12345', executiveName: 'Rajesh Kumar', address: '123 Main Street, Delhi', date: '2024-10-05' },
+    { orderId: '67890', executiveName: 'Priya Sharma', address: '456 Oak Avenue, Mumbai', date: '2024-10-05' },
+    { orderId: '11223', executiveName: 'Arjun Singh', address: '789 Pine Lane, Bangalore', date: '2024-10-05' },
+    { orderId: '11224', executiveName: 'Arjun Singh', address: '101 Maple Drive, Bangalore', date: '2024-10-08' },
+    { orderId: '11225', executiveName: 'Deepa Krishnan', address: '212 Beach Road, Chennai', date: '2024-10-10' },
 ];

@@ -41,6 +41,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { allOrders, type Order, type OrderStatus } from '@/lib/orders-data';
 import { format } from 'date-fns';
+import Link from 'next/link';
 
 const statusConfig: Record<OrderStatus, string> = {
     Pending: 'text-yellow-800 bg-yellow-100',
@@ -71,7 +72,8 @@ export default function AdminOrdersPage() {
         );
     }, [searchTerm]);
 
-    const getOrdersForTab = (tab: OrderStatus) => {
+    const getOrdersForTab = (tab: OrderStatus | 'all') => {
+        if (tab === 'all') return filteredOrders;
         return filteredOrders.filter(o => o.orderStatus === tab);
     }
 
@@ -106,7 +108,7 @@ export default function AdminOrdersPage() {
           </div>
         </div>
         <TabsContent value="all">
-            <OrdersTable orders={filteredOrders} />
+            <OrdersTable orders={getOrdersForTab('all')} />
         </TabsContent>
         <TabsContent value="Pending">
             <OrdersTable orders={getOrdersForTab('Pending')} />
@@ -127,6 +129,9 @@ export default function AdminOrdersPage() {
 
 
 function OrdersTable({ orders }: { orders: Order[] }) {
+    const canCancel = (status: OrderStatus) => !['Delivered', 'Cancelled', 'Returned'].includes(status);
+    const canUpdateStatus = (status: OrderStatus) => !['Cancelled', 'Returned'].includes(status);
+
     return (
          <Card>
           <CardHeader>
@@ -184,11 +189,17 @@ function OrdersTable({ orders }: { orders: Order[] }) {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                          <DropdownMenuItem>View Details</DropdownMenuItem>
-                          <DropdownMenuItem>Update Status</DropdownMenuItem>
-                          <DropdownMenuItem className="text-destructive">
-                            Cancel Order
+                          <DropdownMenuItem asChild>
+                            <Link href={`/admin/orders/${order.orderId}`}>View Details</Link>
                           </DropdownMenuItem>
+                          {canUpdateStatus(order.orderStatus) && (
+                            <DropdownMenuItem>Update Status</DropdownMenuItem>
+                          )}
+                          {canCancel(order.orderStatus) && (
+                            <DropdownMenuItem className="text-destructive">
+                                Cancel Order
+                            </DropdownMenuItem>
+                          )}
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>

@@ -42,6 +42,14 @@ import { Input } from '@/components/ui/input';
 import { allOrders, type Order, type OrderStatus } from '@/lib/orders-data';
 import { format } from 'date-fns';
 import Link from 'next/link';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
+import type { UserOptions } from 'jspdf-autotable';
+
+interface jsPDFWithAutoTable extends jsPDF {
+  autoTable: (options: UserOptions) => jsPDF;
+}
+
 
 const statusConfig: Record<OrderStatus, string> = {
     Pending: 'text-yellow-800 bg-yellow-100',
@@ -61,25 +69,67 @@ const pickupStatusConfig: Record<Order['pickupStatus'], string> = {
 
 export default function AdminOrdersPage() {
     const [searchTerm, setSearchTerm] = React.useState('');
+    const [activeTab, setActiveTab] = React.useState<OrderStatus | 'all'>('all');
 
     const filteredOrders = React.useMemo(() => {
-        if (!searchTerm) return allOrders;
-        const term = searchTerm.toLowerCase();
-        return allOrders.filter(o => 
-            o.orderId.toLowerCase().includes(term) ||
-            o.customer.name.toLowerCase().includes(term) ||
-            o.product.name.toLowerCase().includes(term)
-        );
-    }, [searchTerm]);
+        let filtered = allOrders;
 
-    const getOrdersForTab = (tab: OrderStatus | 'all') => {
-        if (tab === 'all') return filteredOrders;
-        return filteredOrders.filter(o => o.orderStatus === tab);
-    }
+        if (activeTab !== 'all') {
+            filtered = filtered.filter(o => o.orderStatus === activeTab);
+        }
+
+        if (searchTerm) {
+            const term = searchTerm.toLowerCase();
+            filtered = filtered.filter(o => 
+                o.orderId.toLowerCase().includes(term) ||
+                o.customer.name.toLowerCase().includes(term) ||
+                o.product.name.toLowerCase().includes(term)
+            );
+        }
+
+        return filtered;
+    }, [searchTerm, activeTab]);
+    
+    const handleExport = () => {
+        const doc = new jsPDF() as jsPDFWithAutoTable;
+        
+        // Add logo (assuming it's in public/images/logo.png)
+        // You might need to adjust the path or use a base64 string
+        // For this example, I'm using a placeholder as direct FS access isn't feasible here.
+        // In a real app, you'd fetch the image and convert it.
+        const logoImg = new Image();
+        logoImg.src = '/images/logo.png';
+        
+        doc.setFontSize(20);
+        doc.text("Khelwapas Orders Report", 14, 22);
+        
+        const tableColumn = ["Order ID", "Customer", "Status", "Pickup", "Date", "Amount"];
+        const tableRows: (string | number)[][] = [];
+
+        filteredOrders.forEach(order => {
+            const orderData = [
+                order.orderId,
+                order.customer.name,
+                order.orderStatus,
+                order.pickupStatus,
+                format(new Date(order.orderDate), "PP"),
+                `₹${order.amount.toLocaleString('en-IN')}`
+            ];
+            tableRows.push(orderData);
+        });
+
+        doc.autoTable({
+            head: [tableColumn],
+            body: tableRows,
+            startY: 30,
+        });
+
+        doc.save("khelwapas-orders.pdf");
+    };
 
   return (
     <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
-      <Tabs defaultValue="all">
+      <Tabs defaultValue="all" onValueChange={(value) => setActiveTab(value as OrderStatus | 'all')}>
         <div className="flex items-center">
           <TabsList>
             <TabsTrigger value="all">All</TabsTrigger>
@@ -99,7 +149,7 @@ export default function AdminOrdersPage() {
                 onChange={(e) => setSearchTerm(e.target.value)}
                 />
             </div>
-            <Button variant="outline" size="sm" className="h-9 gap-1">
+            <Button variant="outline" size="sm" className="h-9 gap-1" onClick={handleExport}>
               <File className="h-3.5 w-3.5" />
               <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
                 Export
@@ -108,19 +158,19 @@ export default function AdminOrdersPage() {
           </div>
         </div>
         <TabsContent value="all">
-            <OrdersTable orders={getOrdersForTab('all')} />
+            <OrdersTable orders={filteredOrders} />
         </TabsContent>
         <TabsContent value="Pending">
-            <OrdersTable orders={getOrdersForTab('Pending')} />
+            <OrdersTable orders={filteredOrders} />
         </TabsContent>
          <TabsContent value="Shipped">
-            <OrdersTable orders={getOrdersForTab('Shipped')} />
+            <OrdersTable orders={filteredOrders} />
         </TabsContent>
          <TabsContent value="Delivered">
-            <OrdersTable orders={getOrdersForTab('Delivered')} />
+            <OrdersTable orders={filteredOrders} />
         </TabsContent>
          <TabsContent value="Cancelled">
-            <OrdersTable orders={getOrdersForTab('Cancelled')} />
+            <OrdersTable orders={filteredOrders} />
         </TabsContent>
       </Tabs>
     </main>
@@ -216,4 +266,3 @@ function OrdersTable({ orders }: { orders: Order[] }) {
         </Card>
     );
 }
-

@@ -1,6 +1,6 @@
 import type { Product } from '@/components/product-card';
 
-export const allProducts: Product[] = [
+export let allProducts: Product[] = [
   {
     id: '1',
     name: 'Pro Grade Cricket Bat',
@@ -236,3 +236,16 @@ export const allProducts: Product[] = [
     sku: 'KW-BX-011'
   }
 ];
+
+// In a real app, this would be a POST request to your backend.
+// For this prototype, we'll just modify the in-memory array.
+export const addProduct = (product: Omit<Product, 'id' | 'listingDate' | 'dataAiHint'>) => {
+  const newProduct: Product = {
+    ...product,
+    id: `prod-${Date.now()}`,
+    listingDate: new Date().toISOString().split('T')[0], // e.g., 2024-07-28
+    dataAiHint: product.name.split(' ').slice(0,2).join(' ').toLowerCase(), // e.g., 'pro grade'
+  };
+  allProducts.unshift(newProduct); // Add to the beginning of the array
+  return newProduct;
+};

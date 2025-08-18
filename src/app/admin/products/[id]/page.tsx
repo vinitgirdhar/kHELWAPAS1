@@ -31,7 +31,9 @@ import { useDropzone } from 'react-dropzone';
 import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter, useParams } from 'next/navigation';
-import { allProducts } from '@/lib/products';
+import { allProducts, addProduct } from '@/lib/products';
+import type { Product } from '@/components/product-card';
+
 
 export default function ProductFormPage() {
     const [files, setFiles] = useState<(File & { preview: string })[]>([]);
@@ -41,8 +43,9 @@ export default function ProductFormPage() {
     const [originalPrice, setOriginalPrice] = useState(0);
     const [sku, setSku] = useState('');
     const [stock, setStock] = useState(0);
-    const [status, setStatus] = useState('In Stock');
-    const [type, setType] = useState('new');
+    const [status, setStatus] = useState<'In Stock' | 'Out of Stock'>('In Stock');
+    const [type, setType] = useState<'new' | 'preowned'>('new');
+    const [category, setCategory] = useState('');
     
     const { toast } = useToast();
     const router = useRouter();
@@ -59,9 +62,10 @@ export default function ProductFormPage() {
                 setPrice(product.price);
                 setOriginalPrice(product.originalPrice || 0);
                 setSku(product.sku);
-                setStock(parseInt(product.status === 'In Stock' ? '1' : '0', 10)); // Simplified
+                setStock(product.status === 'In Stock' ? 1 : 0); // Simplified stock logic
                 setStatus(product.status);
                 setType(product.type);
+                setCategory(product.category);
                 // In a real app, you'd fetch image files or handle them differently
                 // For this prototype, we'll just show the main image as a preview
                 if (product.image) {
@@ -103,6 +107,29 @@ export default function ProductFormPage() {
     };
 
     const handleSave = () => {
+        if (!isEditing) {
+            // This is a simplified version. In a real app, you'd have robust validation.
+            const newProduct: Omit<Product, 'id' | 'listingDate' | 'dataAiHint'> = {
+                name,
+                category,
+                type,
+                price,
+                originalPrice,
+                image: files.length > 0 ? files[0].preview : 'https://placehold.co/600x600.png',
+                description,
+                status,
+                sku,
+                // These are just placeholders
+                grade: type === 'preowned' ? 'A' : undefined,
+                badge: 'Inspected',
+                images: files.slice(1).map(f => f.preview),
+                specs: {},
+            };
+            addProduct(newProduct);
+        }
+        // Add logic here for updating an existing product if `isEditing` is true.
+        // For the prototype, we'll just show the toast.
+
         toast({
             title: isEditing ? 'Product Updated' : 'Product Saved',
             description: `The product "${name}" has been saved.`,
@@ -194,6 +221,26 @@ export default function ProductFormPage() {
                 )}
               </CardContent>
             </Card>
+             <Card>
+                <CardHeader>
+                    <CardTitle>Category</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div className="grid gap-6">
+                        <div className="grid gap-3">
+                        <Label htmlFor="category">Category</Label>
+                        <Input
+                            id="category"
+                            type="text"
+                            className="w-full"
+                            value={category}
+                            onChange={(e) => setCategory(e.target.value)}
+                            placeholder="e.g. Cricket, Football"
+                        />
+                        </div>
+                    </div>
+                </CardContent>
+             </Card>
           </div>
           <div className="grid auto-rows-max items-start gap-4 lg:gap-8">
              <Card>
@@ -229,7 +276,7 @@ export default function ProductFormPage() {
                   </div>
                    <div className="grid gap-3">
                      <Label htmlFor="status">Status</Label>
-                    <Select value={status} onValueChange={setStatus}>
+                    <Select value={status} onValueChange={(value) => setStatus(value as 'In Stock' | 'Out of Stock')}>
                       <SelectTrigger id="status" aria-label="Select status">
                         <SelectValue placeholder="Select status" />
                       </SelectTrigger>
@@ -241,7 +288,7 @@ export default function ProductFormPage() {
                   </div>
                    <div className="grid gap-3">
                      <Label htmlFor="type">Type</Label>
-                    <Select value={type} onValueChange={setType}>
+                    <Select value={type} onValueChange={(value) => setType(value as 'new' | 'preowned')}>
                       <SelectTrigger id="type" aria-label="Select type">
                         <SelectValue placeholder="Select type" />
                       </SelectTrigger>
@@ -266,3 +313,4 @@ export default function ProductFormPage() {
     </main>
   );
 }
+

@@ -9,11 +9,11 @@ Whether you're after **brand-new gear** or **pre-owned items**, we make the proc
 
 ### 🛒 For Buyers
 - **Product Discovery:** Search and browse new and pre-owned sports items.
-- **Label Clarity:** Understand product tags like `Refurbished`, `New`, and condition grades.
+- **Label Clarity:** Understand product tags like \`Refurbished\`, \`New\`, and condition grades.
 - **Cart & Checkout:** Add to cart, apply discounts, and complete secure payments.
 - **Order Tracking:** Stay updated on order progress from purchase to delivery.
 - **Returns & Refunds:** Simple return process with refund tracking.
-- **Profile Management:** Edit your details, see your join date (e.g., `Joined on January 2024`), and manage preferences.
+- **Profile Management:** Edit your details, see your join date (e.g., \`Joined on January 2024\`), and manage preferences.
 - **Address & Payment Management:** Save multiple addresses and payment methods.
 - **Order History:** Review all past purchases.
 
@@ -44,7 +44,7 @@ Whether you're after **brand-new gear** or **pre-owned items**, we make the proc
 - **Website Help Pages:** Learn how to use the platform effectively.
 - **FAQs:** Quick answers to common user questions.
 - **AI-Powered Chatbot (Khelbot):** Get instant assistance for buying, selling, and platform navigation.
-- **Detailed Product Specs:** View sports gear details (e.g., `Bat Material: Kashmir Willow`).
+- **Detailed Product Specs:** View sports gear details (e.g., \`Bat Material: Kashmir Willow\`).
 
 ---
 
@@ -55,38 +55,38 @@ Whether you're after **brand-new gear** or **pre-owned items**, we make the proc
 - **Tailwind CSS:** Utility-first styling framework.
 - **Genkit:** Toolkit for AI-driven workflows.
 - **Google AI (Gemini):** AI integration for chatbot and recommendations.
-- **`pdf-parse`:** PDF document parsing.
-- **Node.js Built-in Modules:** File system (`fs`) and command-line interfaces (`node:readline/promises`).
+- **\`pdf-parse\`:** PDF document parsing.
+- **Node.js Built-in Modules:** File system (\`fs\`) and command-line interfaces (\`node:readline/promises\`).
 
 ---
 
 ## 🚀 Getting Started
 
 1. **Clone the repository**
-   ```bash
+   \`\`\`bash
    git clone <repository_url>
-````
+   \`\`\`
 
 2. **Install dependencies**
 
-   ```bash
+   \`\`\`bash
    npm install
    # or
    yarn install
-   ```
+   \`\`\`
 
 3. **Configure environment variables**
 
-   * Create a `.env` file based on `.env.example`.
+   * Create a \`.env\` file based on \`.env.example\`.
    * Add API keys, database URLs, and other required secrets.
 
 4. **Run the development server**
 
-   ```bash
+   \`\`\`bash
    npm run dev
    # or
    yarn dev
-   ```
+   \`\`\`
 
 5. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
@@ -94,7 +94,7 @@ Whether you're after **brand-new gear** or **pre-owned items**, we make the proc
 
 ## 📂 Project Structure
 
-```
+\`\`\`
 src/
 ├── app/           # Pages and API routes
 ├── components/    # Reusable UI components
@@ -102,7 +102,7 @@ src/
 ├── lib/           # Utilities and helpers
 ├── ai/            # AI workflows & chatbot logic
 public/            # Static assets (images, icons, etc.)
-```
+\`\`\`
 
 ---
 

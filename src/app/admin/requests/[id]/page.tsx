@@ -3,7 +3,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowLeft, CheckCircle, Clock, XCircle, Mail, Phone, MessageSquare } from 'lucide-react';
+import { ArrowLeft, CheckCircle, Clock, XCircle, Mail, Phone, MessageSquare, Calendar as CalendarIcon } from 'lucide-react';
 import { sellRequests, type SellRequest } from '@/lib/sell-requests';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -14,6 +14,7 @@ const statusConfig: Record<SellRequest['status'], { icon: React.ReactNode; color
     Pending: { icon: <Clock className="h-4 w-4" />, color: "text-yellow-600 bg-yellow-100/60 border-yellow-500/30" },
     Approved: { icon: <CheckCircle className="h-4 w-4" />, color: "text-green-600 bg-green-100/60 border-green-500/30" },
     Rejected: { icon: <XCircle className="h-4 w-4" />, color: "text-red-600 bg-red-100/60 border-red-500/30" },
+    Scheduled: { icon: <CalendarIcon className="h-4 w-4" />, color: "text-blue-600 bg-blue-100/60 border-blue-500/30" },
 };
 
 const contactConfig = {

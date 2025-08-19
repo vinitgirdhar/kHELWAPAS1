@@ -25,6 +25,7 @@ const statusConfig: Record<SellRequest['status'], { icon: React.ReactNode; color
     Pending: { icon: <Clock className="h-3 w-3" />, color: "text-yellow-600 bg-yellow-100/60 border-yellow-500/30", badge: "bg-yellow-500" },
     Approved: { icon: <CheckCircle className="h-3 w-3" />, color: "text-green-600 bg-green-100/60 border-green-500/30", badge: "bg-green-500" },
     Rejected: { icon: <XCircle className="h-3 w-3" />, color: "text-red-600 bg-red-100/60 border-red-500/30", badge: "bg-red-500" },
+    Scheduled: { icon: <Clock className="h-3 w-3" />, color: "text-blue-600 bg-blue-100/60 border-blue-500/30", badge: "bg-blue-500" },
 };
 
 

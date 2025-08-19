@@ -9,11 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
 export default function Footer() {
-  const [currentYear, setCurrentYear] = useState<number | string>('');
-
-  useEffect(() => {
-    setCurrentYear(new Date().getFullYear());
-  }, []);
+  const [currentYear, setCurrentYear] = useState(() => new Date().getFullYear());
 
   return (
     <footer className="bg-muted/40 border-t">

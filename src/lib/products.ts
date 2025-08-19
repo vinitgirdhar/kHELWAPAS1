@@ -56,7 +56,7 @@ export let allProducts: Product[] = [
     price: 6000,
     originalPrice: 11000,
     grade: 'B',
-    image: 'https://images.unsplash.com/photo-1587280501635-33535b3f631c?q=80&w=800&h=800&fit=crop',
+    image: 'https://placehold.co/800x800.png',
     dataAiHint: 'badminton racket',
     description: 'High-modulus graphite racket, very light and powerful. In good condition with some minor paint chips on the frame. Recently re-strung.',
      specs: {
@@ -117,7 +117,7 @@ export let allProducts: Product[] = [
     price: 2000,
     originalPrice: 4500,
     grade: 'C',
-    image: 'https://images.unsplash.com/photo-1575361204480-aadea2503aa4?q=80&w=800&h=800&fit=crop',
+    image: 'https://placehold.co/800x800.png',
     dataAiHint: 'vintage football',
     badge: 'Refurbished',
     description: 'A classic, hand-stitched leather football. Shows some scuffs and wear but has been professionally cleaned and refurbished. Great for collectors or casual play.',

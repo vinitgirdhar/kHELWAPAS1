@@ -125,7 +125,7 @@ export let allOrders: Order[] = [
             name: 'Featherlight Badminton Racket',
             type: 'Refurbished',
             quantity: 1,
-            image: 'https://images.unsplash.com/photo-1587280501635-33535b3f631c?q=80&w=800&h=800&fit=crop'
+            image: 'https://placehold.co/800x800.png'
         },
         amount: 6000,
         paymentStatus: 'Pending',
@@ -223,7 +223,7 @@ export let allOrders: Order[] = [
             name: 'Classic Leather Football',
             type: 'Pre-Owned',
             quantity: 1,
-            image: 'https://images.unsplash.com/photo-1575361204480-aadea2503aa4?q=80&w=800&h=800&fit=crop'
+            image: 'https://placehold.co/800x800.png'
         },
         amount: 2000,
         paymentStatus: 'COD',

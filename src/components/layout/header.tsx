@@ -101,7 +101,7 @@ export default function Header() {
                 <span className="sr-only">Cart</span>
               </Link>
             </Button>
-            {isLoggedIn ? (
+            {isMounted && isLoggedIn ? (
                <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                      <Button variant="ghost" size="icon">
@@ -125,7 +125,7 @@ export default function Header() {
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
-            ) : (
+            ) : isMounted ? (
               <div className='flex items-center gap-2'>
                 <Button variant="ghost" asChild>
                   <Link href="/login">Login</Link>
@@ -134,7 +134,7 @@ export default function Header() {
                    <Link href="/register">Register</Link>
                 </Button>
               </div>
-            )}
+            ) : null}
           </div>
           <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
             <SheetTrigger asChild className="md:hidden">

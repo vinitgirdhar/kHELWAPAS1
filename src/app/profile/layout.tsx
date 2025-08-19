@@ -2,11 +2,12 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { User, ShoppingBag, MapPin, CreditCard, LogOut } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { useToast } from '@/hooks/use-toast';
 
 const sidebarNavItems = [
   {
@@ -37,6 +38,16 @@ export default function ProfileLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const { toast } = useToast();
+
+  const handleLogout = () => {
+    localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('userProfile');
+    window.dispatchEvent(new Event('storage')); // Notify other tabs/windows
+    toast({ title: 'Logged Out', description: 'You have been successfully logged out.' });
+    router.push('/');
+  };
 
   return (
     <div className="container space-y-12 py-12">
@@ -71,6 +82,7 @@ export default function ProfileLayout({
              <Button
                 variant="ghost"
                 className="w-full justify-start gap-2 text-destructive"
+                onClick={handleLogout}
              >
                 <LogOut className="h-4 w-4"/>
                 Logout

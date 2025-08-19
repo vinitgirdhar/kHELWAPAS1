@@ -1,0 +1,112 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
+import { getCurrentUser } from '@/lib/auth'
+
+export async function GET(request: NextRequest) {
+  try {
+    const currentUser = await getCurrentUser(request)
+    if (!currentUser) {
+      return NextResponse.json(
+        { success: false, message: 'Authentication required' },
+        { status: 401 }
+      )
+    }
+
+    // Get orders for current user or all orders if admin
+    const where = currentUser.role === 'admin' ? {} : { userId: currentUser.userId }
+
+    const orders = await prisma.order.findMany({
+      where,
+      include: {
+        user: {
+          select: {
+            id: true,
+            fullName: true,
+            email: true
+          }
+        }
+      },
+      orderBy: {
+        createdAt: 'desc'
+      }
+    })
+
+    return NextResponse.json({
+      success: true,
+      orders
+    })
+  } catch (error) {
+    console.error('Get orders error:', error)
+    return NextResponse.json(
+      { success: false, message: 'Internal server error' },
+      { status: 500 }
+    )
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const currentUser = await getCurrentUser(request)
+    if (!currentUser) {
+      return NextResponse.json(
+        { success: false, message: 'Authentication required' },
+        { status: 401 }
+      )
+    }
+
+    const body = await request.json()
+    const { items, paymentMethod, fulfillmentStatus = 'pending' } = body
+
+    // Validate items
+    if (!items || !Array.isArray(items) || items.length === 0) {
+      return NextResponse.json(
+        { success: false, message: 'Order items are required' },
+        { status: 400 }
+      )
+    }
+
+    // Calculate total price
+    let totalPrice = 0
+    for (const item of items) {
+      if (!item.productId || !item.quantity || !item.price) {
+        return NextResponse.json(
+          { success: false, message: 'Each item must have productId, quantity, and price' },
+          { status: 400 }
+        )
+      }
+      totalPrice += item.price * item.quantity
+    }
+
+    // Create order
+    const order = await prisma.order.create({
+      data: {
+        userId: currentUser.userId,
+        items: items,
+        totalPrice,
+        paymentStatus: 'pending',
+        fulfillmentStatus
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            fullName: true,
+            email: true
+          }
+        }
+      }
+    })
+
+    return NextResponse.json({
+      success: true,
+      message: 'Order created successfully',
+      order
+    })
+  } catch (error) {
+    console.error('Create order error:', error)
+    return NextResponse.json(
+      { success: false, message: 'Internal server error' },
+      { status: 500 }
+    )
+  }
+}

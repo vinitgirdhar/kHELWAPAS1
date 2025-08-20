@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from 'next/link';
@@ -128,15 +127,6 @@ export default function ProductFormPage() {
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
         accept: { 'image/*': [] },
         onDrop: acceptedFiles => {
-            if (files.length + acceptedFiles.length > 10) {
-                toast({
-                    variant: 'destructive',
-                    title: 'Too many images',
-                    description: 'You can upload a maximum of 10 images.',
-                });
-                return;
-            }
-            
             const newFiles = acceptedFiles.map((file, index) => ({
                 id: `new-${Date.now()}-${index}`,
                 name: file.name,
@@ -145,7 +135,6 @@ export default function ProductFormPage() {
                 originalUrl: undefined,
                 file: file // Store the actual file for upload
             }));
-            
             setFiles(prevFiles => [...prevFiles, ...newFiles]);
         }
     });
@@ -167,35 +156,29 @@ export default function ProductFormPage() {
         if (!isEditing) {
             // Create new product
             try {
-                // First upload images if there are new files
-                let imageUrls: string[] = [];
-                
-                if (files.length > 0) {
-                    // Filter out blob URLs and only upload actual files
-                    const actualFiles = files.filter(f => !f.preview.startsWith('blob:'));
-                    
-                    if (actualFiles.length > 0) {
-                        const formData = new FormData();
-                        actualFiles.forEach(file => {
-                            if (file.file) {
-                                formData.append('files', file.file);
-                            }
-                        });
-                        
-                        const uploadResponse = await fetch('/api/upload', {
-                            method: 'POST',
-                            body: formData,
-                        });
-                        
-                        if (uploadResponse.ok) {
-                            const uploadData = await uploadResponse.json();
-                            imageUrls = uploadData.files;
-                        } else {
-                            throw new Error('Failed to upload images');
-                        }
+                // First upload any newly added image files
+                let uploadedUrls: string[] = [];
+
+                const newFiles = files.filter(f => !f.isExisting && !!f.file);
+                if (newFiles.length > 0) {
+                    const formData = new FormData();
+                    newFiles.forEach(f => f.file && formData.append('files', f.file));
+                    // Ensure product uploads directory is used
+                    formData.set('type', 'product');
+
+                    const uploadResponse = await fetch('/api/upload', {
+                        method: 'POST',
+                        body: formData,
+                    });
+                    if (!uploadResponse.ok) {
+                        let msg = 'Failed to upload images';
+                        try { const err = await uploadResponse.json(); msg = err?.message || msg; } catch {}
+                        throw new Error(msg);
                     }
+                    const uploadData = await uploadResponse.json();
+                    uploadedUrls = uploadData.files || [];
                 }
-                
+
                 // Create product payload
                 const payload: any = {
                     name,
@@ -205,39 +188,30 @@ export default function ProductFormPage() {
                     originalPrice,
                     description,
                     isAvailable: status === 'In Stock',
-                    imageUrls,
+                    imageUrls: uploadedUrls,
                     specs: {}
                 };
-                
-                // Only add badge and grade if they have values
+
                 if (badge) payload.badge = badge;
                 if (grade) payload.grade = grade;
-                
+
                 console.log('Creating new product with payload:', payload);
-                
+
                 const createResponse = await fetch('/api/products/create', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload),
                 });
-                
+
                 const createData = await createResponse.json();
-                
                 if (!createResponse.ok || !createData.success) {
                     throw new Error(createData?.message || 'Failed to create product');
                 }
-                
-                toast({
-                    title: 'Success!',
-                    description: 'Product created successfully!',
-                });
-                
-                // Trigger real-time update on products page
+
+                toast({ title: 'Success!', description: 'Product created successfully!' });
                 localStorage.setItem('productCreated', 'true');
-                
                 router.push('/admin/products');
                 return;
-                
             } catch (error) {
                 console.error('Failed to create product:', error);
                 toast({
@@ -249,6 +223,31 @@ export default function ProductFormPage() {
             }
         } else if (productId) {
             try {
+                // Upload new images (files added during edit)
+                let uploadedUrls: string[] = [];
+                const newFiles = files.filter(f => !f.isExisting && !!f.file);
+                if (newFiles.length > 0) {
+                    const formData = new FormData();
+                    newFiles.forEach(f => f.file && formData.append('files', f.file));
+                    formData.set('type', 'product');
+                    const uploadResponse = await fetch('/api/upload', { method: 'POST', body: formData });
+                    if (!uploadResponse.ok) {
+                        let msg = 'Failed to upload images';
+                        try { const err = await uploadResponse.json(); msg = err?.message || msg; } catch {}
+                        throw new Error(msg);
+                    }
+                    const uploadData = await uploadResponse.json();
+                    uploadedUrls = uploadData.files || [];
+                }
+
+                // Keep only the existing images that user didn't remove
+                const keptExisting = files
+                    .filter(f => f.isExisting)
+                    .map(f => f.originalUrl || f.preview)
+                    .filter(Boolean) as string[];
+
+                const finalImageUrls = [...keptExisting, ...uploadedUrls];
+
                 // Build payload matching API schema
                 const payload: any = {
                     name,
@@ -258,71 +257,54 @@ export default function ProductFormPage() {
                     originalPrice,
                     description,
                     isAvailable: status === 'In Stock',
-                }
+                    imageUrls: finalImageUrls,
+                };
 
-                // Filter out blob URLs and only send actual image URLs
-                const imageUrls = files
-                    .filter(f => f.isExisting || !f.preview.startsWith('blob:'))
-                    .map(f => f.preview)
-                    .filter(Boolean);
-                payload.imageUrls = imageUrls;
-
-                console.log('Files state:', files);
-                console.log('Filtered imageUrls:', imageUrls);
                 console.log('Sending update payload:', payload);
 
                 const res = await fetch(`/api/products/${productId}`, {
                     method: 'PATCH',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload),
-                })
+                });
 
-                const data = await res.json()
-
+                const data = await res.json();
                 if (!res.ok || !data.success) {
-                    throw new Error(data?.message || 'Failed to update product')
+                    throw new Error(data?.message || 'Failed to update product');
                 }
 
-                // Update local UI from response to reflect immediate change
-                const updated = data.product as Product
-                setName(updated.name)
-                setDescription(updated.description || '')
-                setPrice(updated.price)
-                setOriginalPrice(updated.originalPrice || 0)
-                setStatus(updated.status as 'In Stock' | 'Out of Stock')
-                setType(updated.type as 'new' | 'preowned')
-                setCategory(updated.category)
-                
+                const updated = data.product as Product;
+                setName(updated.name);
+                setDescription(updated.description || '');
+                setPrice(updated.price);
+                setOriginalPrice(updated.originalPrice || 0);
+                setStatus(updated.status as 'In Stock' | 'Out of Stock');
+                setType(updated.type as 'new' | 'preowned');
+                setCategory(updated.category);
+
                 // Update files state with the new images from the API response
                 if (updated.images && updated.images.length > 0) {
-                    const newFiles: FileWithPreview[] = updated.images.map((imageUrl: string, index: number) => ({
+                    const newFilesState: FileWithPreview[] = updated.images.map((imageUrl: string, index: number) => ({
                         id: `updated-${index}`,
                         name: `updated-image-${index}`,
                         preview: imageUrl,
                         isExisting: true,
-                        originalUrl: imageUrl
+                        originalUrl: imageUrl,
                     }));
-                    setFiles(newFiles);
+                    setFiles(newFilesState);
                 } else {
                     setFiles([]);
                 }
 
-                toast({
-                    title: 'Product Updated',
-                    description: `The product "${updated.name}" has been updated.`,
-                })
-
-                // Trigger real-time update on products page
+                toast({ title: 'Product Updated', description: `The product "${updated.name}" has been updated.` });
                 localStorage.setItem('productUpdated', 'true');
-
-                // Navigate back to products list (or stay and keep editing)
-                router.push('/admin/products')
+                router.push('/admin/products');
             } catch (err: any) {
-                console.error('Update product failed:', err)
-                toast({ variant: 'destructive', title: 'Update failed', description: err?.message || 'Unable to update product' })
+                console.error('Update product failed:', err);
+                toast({ variant: 'destructive', title: 'Update failed', description: err?.message || 'Unable to update product' });
             }
         } else {
-            toast({ variant: 'destructive', title: 'Invalid product', description: 'Missing product id' })
+            toast({ variant: 'destructive', title: 'Invalid product', description: 'Missing product id' });
         }
     }
 
@@ -394,7 +376,7 @@ export default function ProductFormPage() {
                             <CardHeader>
                                 <CardTitle>Product Images</CardTitle>
                                 <CardDescription>
-                                    Upload up to 10 images for the product. The first image will be the thumbnail.
+                                    Upload images for the product. The first image will be the thumbnail.
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
@@ -433,24 +415,12 @@ export default function ProductFormPage() {
                                                         </Badge>
                                                     </div>
                                                 )}
-                                                {file.preview.startsWith('blob:') && (
-                                                    <div className="absolute bottom-1 right-1">
-                                                        <Badge variant="destructive" className="text-xs">
-                                                            Temporary
-                                                        </Badge>
-                                                    </div>
-                                                )}
+                                                {/* No temporary badge in admin UI */}
                                             </div>
                                         ))}
                                     </div>
                                 )}
-                                {files.some(f => f.preview.startsWith('blob:')) && (
-                                    <div className="mt-2 p-2 bg-yellow-50 border border-yellow-200 rounded-md">
-                                        <p className="text-xs text-yellow-800">
-                                            ⚠️ Some images are temporary and will not be saved. Please upload actual image files.
-                                        </p>
-                                    </div>
-                                )}
+                                {/* Removed temporary images warning for admin UI */}
                             </CardContent>
                         </Card>
                         <Card>
@@ -532,7 +502,7 @@ export default function ProductFormPage() {
                                     </div>
                                     <div className="grid gap-3">
                                         <Label htmlFor="badge">Badge</Label>
-                                        <Select value={badge || undefined} onValueChange={(value) => setBadge(value)}>
+                                        <Select value={badge || undefined} onValueChange={(value) => setBadge(value as 'A' | 'B' | 'C' | 'D')}>
                                             <SelectTrigger id="badge" aria-label="Select badge">
                                                 <SelectValue placeholder="Select badge" />
                                             </SelectTrigger>
@@ -546,7 +516,7 @@ export default function ProductFormPage() {
                                     </div>
                                     <div className="grid gap-3">
                                         <Label htmlFor="grade">Grade (for pre-owned items)</Label>
-                                        <Select value={grade || undefined} onValueChange={(value) => setGrade(value as 'A' | 'B' | 'C' | 'D' | '')}>
+                                        <Select value={grade || undefined} onValueChange={(value) => setGrade(value as 'A' | 'B' | 'C' | 'D')}>
                                             <SelectTrigger id="grade" aria-label="Select grade">
                                                 <SelectValue placeholder="Select grade" />
                                             </SelectTrigger>

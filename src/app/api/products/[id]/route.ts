@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
+import { existsSync } from 'fs'
+import { unlink } from 'fs/promises'
+import { join } from 'path'
 
 interface RouteParams {
   params: {
@@ -70,7 +73,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
       originalPrice: z.coerce.number().nonnegative().nullable().optional(),
       description: z.string().optional(),
       isAvailable: z.boolean().optional(),
-      imageUrls: z.array(z.string().url()).optional(),
+      imageUrls: z.array(z.string()).optional(), // Allow any string URLs (relative or absolute)
       badge: z.string().nullable().optional(),
       grade: z.enum(['A', 'B', 'C', 'D']).nullable().optional(),
       specs: z.record(z.any()).optional(),
@@ -78,6 +81,8 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 
     const parsed = schema.safeParse(body)
     if (!parsed.success) {
+      console.log('[API] PATCH validation failed:', parsed.error.flatten())
+      console.log('[API] Request body was:', JSON.stringify(body, null, 2))
       return NextResponse.json(
         { success: false, message: 'Invalid payload', issues: parsed.error.flatten() },
         { status: 400 }
@@ -85,6 +90,15 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     }
 
     const data = parsed.data
+
+    // Fetch existing product to compute image diffs (for cleanup)
+    const existing = await prisma.product.findUnique({ where: { id: params.id } })
+    if (!existing) {
+      return NextResponse.json(
+        { success: false, message: 'Product not found' },
+        { status: 404 }
+      )
+    }
 
     // Build prisma update data without undefined fields
     const updateData: any = {}
@@ -108,6 +122,40 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     })
 
     console.log('[API] Product updated', { id: updated.id })
+
+    // If image URLs were updated, delete any files that are no longer referenced
+    if (data.imageUrls !== undefined) {
+      try {
+        const oldUrls: string[] = Array.isArray((existing as any).imageUrls)
+          ? ((existing as any).imageUrls as string[])
+          : []
+        const newUrls: string[] = Array.isArray(data.imageUrls)
+          ? (data.imageUrls as string[])
+          : []
+
+        const toDelete = oldUrls.filter((u) => !newUrls.includes(u))
+
+        for (const url of toDelete) {
+          // Only allow deleting files within public/uploads/products
+          const prefix = '/uploads/'
+          if (typeof url !== 'string' || !url.startsWith(prefix)) continue
+          const relative = url.slice(prefix.length) // e.g., products/abc.jpg
+          if (!relative.startsWith('products/')) continue
+
+          const fullPath = join(process.cwd(), 'public', 'uploads', relative.replace(/^\/+/, ''))
+          if (existsSync(fullPath)) {
+            try {
+              await unlink(fullPath)
+              console.log('[API] Deleted old product image:', fullPath)
+            } catch (e) {
+              console.warn('[API] Failed to delete file:', fullPath, e)
+            }
+          }
+        }
+      } catch (e) {
+        console.warn('[API] Image cleanup step failed:', e)
+      }
+    }
 
     // Transform to match frontend shape
     const transformedProduct = {

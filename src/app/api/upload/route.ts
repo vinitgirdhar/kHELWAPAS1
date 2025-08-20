@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { writeFile, mkdir } from 'fs/promises';
+import { writeFile, mkdir, access, unlink } from 'fs/promises';
 import { join } from 'path';
 import { existsSync } from 'fs';
 
@@ -22,8 +22,9 @@ export async function POST(request: NextRequest) {
       entry.count++;
     }
 
-    const formData = await request.formData();
-    const type = (formData.get('type') as string) || 'product';
+  const formData = await request.formData();
+  const typeIn = ((formData.get('type') as string) || 'product').toLowerCase();
+  const type = typeIn === 'products' ? 'product' : typeIn;
 
     // Accept both multiple 'files' and a single 'file'
     let files = formData.getAll('files') as File[];
@@ -39,7 +40,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Select target directory based on type
+  // Select target directory based on type
     const subdir = type === 'profile' ? 'profile' : 'products';
     const uploadDir = join(
       process.cwd(),
@@ -53,17 +54,21 @@ export async function POST(request: NextRequest) {
       await mkdir(uploadDir, { recursive: true });
     }
 
+  console.log('[UPLOAD] Incoming files:', files.map(f => ({ name: f.name, type: (f as any).type, size: (f as any).size })));
+
   const uploadedFiles: string[] = [];
 
     for (const file of files) {
       // Validate file type and size
-      if (!file.type?.startsWith('image/')) {
+      // Some environments may not populate file.type; fall back to extension check
+      if (file.type && !file.type.startsWith('image/')) {
         continue; // Skip non-image files
       }
-      // Strict whitelist by extension
-      const allowedExt = ['jpg','jpeg','png','gif','webp'];
+      // Strict whitelist by extension (expanded)
+      const allowedExt = ['jpg','jpeg','png','gif','webp','avif','heic','heif'];
       const extension = file.name.split('.').pop()?.toLowerCase();
       if (!extension || !allowedExt.includes(extension)) {
+        console.warn('[UPLOAD] Skipping file due to extension:', file.name, extension);
         continue;
       }
       // Size limits: 5MB for profile, 10MB otherwise
@@ -85,7 +90,7 @@ export async function POST(request: NextRequest) {
       const bytes = await file.arrayBuffer();
       const buffer = Buffer.from(bytes);
       
-      await writeFile(filepath, buffer);
+  await writeFile(filepath, buffer);
       
   // Return the public URL path
   const publicUrl = `/uploads/${subdir}/${filename}`;
@@ -93,8 +98,9 @@ export async function POST(request: NextRequest) {
     }
 
     if (uploadedFiles.length === 0) {
+      console.warn('[UPLOAD] No valid image files processed');
       return NextResponse.json(
-        { success: false, message: 'No valid image files provided' },
+        { success: false, message: 'No valid image files provided. Allowed: jpg, jpeg, png, gif, webp, avif, heic, heif' },
         { status: 400 }
       );
     }
@@ -113,5 +119,31 @@ export async function POST(request: NextRequest) {
       { success: false, message: 'Failed to upload files' },
       { status: 500 }
     );
+  }
+}
+
+// Simple health check to verify write permissions in upload directories
+export async function GET() {
+  try {
+    const baseDir = join(process.cwd(), 'public', 'uploads');
+    if (!existsSync(baseDir)) {
+      await mkdir(baseDir, { recursive: true });
+    }
+
+    const productsDir = join(baseDir, 'products');
+    if (!existsSync(productsDir)) {
+      await mkdir(productsDir, { recursive: true });
+    }
+
+    // Attempt to write and delete a temp file
+    const tempPath = join(productsDir, `.__permcheck_${Date.now()}.tmp`);
+    await writeFile(tempPath, Buffer.from('ok'));
+    await access(tempPath);
+    await unlink(tempPath);
+
+    return NextResponse.json({ success: true, message: 'Upload directory is writable' });
+  } catch (error) {
+    console.error('Upload permission check failed:', error);
+    return NextResponse.json({ success: false, message: 'Upload directory is not writable' }, { status: 500 });
   }
 }

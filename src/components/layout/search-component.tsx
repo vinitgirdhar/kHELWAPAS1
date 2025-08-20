@@ -65,7 +65,8 @@ export default function SearchComponent() {
   }, [searchQuery, allProducts]);
 
   useEffect(() => {
-    const SpeechRecognition = (window as SpeechRecognitionWindow).SpeechRecognition || (window as SpeechRecognitionWindow).webkitSpeechRecognition;
+    // Cast through unknown to satisfy TS while safely checking runtime availability
+    const SpeechRecognition = (window as unknown as SpeechRecognitionWindow).SpeechRecognition || (window as unknown as SpeechRecognitionWindow).webkitSpeechRecognition;
     
     if (SpeechRecognition) {
       const recognition = new SpeechRecognition();
@@ -120,22 +121,22 @@ export default function SearchComponent() {
     <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
       <PopoverTrigger asChild>
         <div className="relative w-full md:w-64">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground stroke-[2]" />
           <Input
             ref={inputRef}
             placeholder="Search gear..."
-            className="pl-9 pr-16"
+            className="pl-10 pr-16 h-10"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
           <div className="absolute right-1 top-1/2 -translate-y-1/2 flex items-center">
             {searchQuery && (
-              <Button type="button" variant="ghost" size="icon" className="h-7 w-7" onClick={handleClear}>
-                <X className="h-4 w-4" />
+              <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={handleClear}>
+                <X className="h-4 w-4 stroke-[2]" />
               </Button>
             )}
-            <Button type="button" variant="ghost" size="icon" className="h-7 w-7" onClick={handleVoiceSearch}>
-              <Mic className={cn("h-4 w-4", isListening && "text-red-500 animate-pulse")} />
+            <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={handleVoiceSearch}>
+              <Mic className={cn("h-4 w-4 stroke-[2]", isListening && "text-red-500 animate-pulse")} />
             </Button>
           </div>
         </div>
